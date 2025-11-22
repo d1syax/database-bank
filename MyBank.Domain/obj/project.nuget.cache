@@ -1,8 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "6366EdafJ4I=",
+  "dgSpecHash": "Nko74OLdpRQ=",
   "success": true,
   "projectFilePath": "C:\\Users\\boyak\\Documents\\GitHub\\database-bank\\MyBank.Domain\\MyBank.Domain.csproj",
-  "expectedPackageFiles": [],
+  "expectedPackageFiles": [
+    "C:\\Users\\boyak\\.nuget\\packages\\csharpfunctionalextensions\\3.6.0\\csharpfunctionalextensions.3.6.0.nupkg.sha512"
+  ],
   "logs": []
 }
