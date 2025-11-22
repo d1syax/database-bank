@@ -3,10 +3,10 @@ using DefaultNamespace;
 
 namespace MyBank.Domain.Entities;
 
-public class User : SoftDeletableEntity
+public class UserEntity : SoftDeletableEntity
 {
-    private User() { }
-    public User(string firstName, string lastName, string email, string passwordHash, DateTime dateOfBirth, string phoneNumber)
+    private UserEntity() { }
+    public UserEntity(string firstName, string lastName, string email, string passwordHash, DateTime dateOfBirth, string phoneNumber)
     {
         FirstName = firstName;
         LastName = lastName;
@@ -22,8 +22,8 @@ public class User : SoftDeletableEntity
     public string PhoneNumber { get; private set; } = string.Empty;
     public DateTime DateOfBirth { get; private set; }
 
-    public ICollection<Account> Accounts { get; set; } = new List<Account>();
-    public ICollection<Loan> Loans { get; set; } = new List<Loan>();
+    public ICollection<AccountEntity> Accounts { get; set; } = new List<AccountEntity>();
+    public ICollection<LoanEntity> Loans { get; set; } = new List<LoanEntity>();
     
     public string FullName => $"{FirstName} {LastName}";
     
@@ -38,13 +38,13 @@ public class User : SoftDeletableEntity
         }
     }
 
-    public static Result<User> Create(string firstName, string lastName, string email, string passwordHash, DateTime dateOfBirth, string phoneNumber)
+    public static Result<UserEntity> Create(string firstName, string lastName, string email, string passwordHash, DateTime dateOfBirth, string phoneNumber)
     {
-        if (string.IsNullOrWhiteSpace(email)) return Result.Failure<User>("Email cannot be empty");
-        if (string.IsNullOrWhiteSpace(firstName)) return Result.Failure<User>("Name is required");
-        if (dateOfBirth > DateTime.Now.AddYears(-14)) return Result.Failure<User>("User is too young");
+        if (string.IsNullOrWhiteSpace(email)) return Result.Failure<UserEntity>("Email cannot be empty");
+        if (string.IsNullOrWhiteSpace(firstName)) return Result.Failure<UserEntity>("Name is required");
+        if (dateOfBirth > DateTime.Now.AddYears(-14)) return Result.Failure<UserEntity>("UserEntity is too young");
 
-        var user = new User(firstName, lastName, email, passwordHash, dateOfBirth, phoneNumber);
+        var user = new UserEntity(firstName, lastName, email, passwordHash, dateOfBirth, phoneNumber);
 
         return Result.Success(user);
     }

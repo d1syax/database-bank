@@ -3,10 +3,10 @@ using DefaultNamespace;
 
 namespace MyBank.Domain.Entities;
 
-public class Loan : SoftDeletableEntity
+public class LoanEntity : SoftDeletableEntity
 {
-    private Loan() { }
-    private Loan(Guid userId, Guid accountId, decimal principalAmount, decimal interestAmount)
+    private LoanEntity() { }
+    private LoanEntity(Guid userId, Guid accountId, decimal principalAmount, decimal interestAmount)
     {
         UserId = userId;
         AccountId = accountId;
@@ -27,29 +27,29 @@ public class Loan : SoftDeletableEntity
     public LoanStatus Status { get; private set; }
     public DateTime IssuedAt { get; private set; }
 
-    public User User { get; set; } = null!;
-    public Account Account { get; set; } = null!;
-    public ICollection<LoanPayment> Payments { get; set; } = new List<LoanPayment>();
+    public UserEntity UserEntity { get; set; } = null!;
+    public AccountEntity AccountEntity { get; set; } = null!;
+    public ICollection<LoanPaymentEntity> Payments { get; set; } = new List<LoanPaymentEntity>();
     public bool IsFullyPaid => PaidAmount >= TotalAmountToRepay;
     
-    public static Result<Loan> Create(Guid userId, Guid accountId, decimal amount, decimal interestRatePercent)
+    public static Result<LoanEntity> Create(Guid userId, Guid accountId, decimal amount, decimal interestRatePercent)
     {
-        if (userId == Guid.Empty) return Result.Failure<Loan>("UserId is required");
-        if (accountId == Guid.Empty) return Result.Failure<Loan>("AccountId is required");
+        if (userId == Guid.Empty) return Result.Failure<LoanEntity>("UserId is required");
+        if (accountId == Guid.Empty) return Result.Failure<LoanEntity>("AccountId is required");
         
-        if (amount <= 0) return Result.Failure<Loan>("Loan amount must be positive");
-        if (interestRatePercent < 0) return Result.Failure<Loan>("Interest rate cannot be negative");
+        if (amount <= 0) return Result.Failure<LoanEntity>("LoanEntity amount must be positive");
+        if (interestRatePercent < 0) return Result.Failure<LoanEntity>("Interest rate cannot be negative");
 
         decimal interestAmount = amount * (interestRatePercent / 100m);
 
-        var loan = new Loan(userId, accountId, amount, interestAmount);
+        var loan = new LoanEntity(userId, accountId, amount, interestAmount);
         return Result.Success(loan);
     }
 
     public Result Repay(decimal amount)
     {
         if (Status != LoanStatus.Active)
-            return Result.Failure("Loan is not active");
+            return Result.Failure("LoanEntity is not active");
 
         if (amount <= 0)
             return Result.Failure("Repayment amount must be positive");

@@ -4,10 +4,10 @@ using DefaultNamespace;
 
 namespace MyBank.Domain.Entities;
 
-public class Account : SoftDeletableEntity
+public class AccountEntity : SoftDeletableEntity
 {
-    private Account() { }
-    private Account(Guid userId, string accountNumber, AccountType accountType, string currency)
+    private AccountEntity() { }
+    private AccountEntity(Guid userId, string accountNumber, AccountType accountType, string currency)
     {
         UserId = userId;
         AccountNumber = accountNumber;
@@ -29,27 +29,27 @@ public class Account : SoftDeletableEntity
 
     public byte[] RowVersion { get; set; } 
 
-    public User User { get; set; } = null!;
+    public UserEntity UserEntity { get; set; } = null!;
     
-    public ICollection<Transaction> OutgoingTransactions { get; set; } = new List<Transaction>();
-    public ICollection<Transaction> IncomingTransactions { get; set; } = new List<Transaction>();
-    public ICollection<Card> Cards { get; set; } = new List<Card>();
-    public ICollection<Loan> Loans { get; set; } = new List<Loan>();
+    public ICollection<TransactionEntity> OutgoingTransactions { get; set; } = new List<TransactionEntity>();
+    public ICollection<TransactionEntity> IncomingTransactions { get; set; } = new List<TransactionEntity>();
+    public ICollection<CardEntity> Cards { get; set; } = new List<CardEntity>();
+    public ICollection<LoanEntity> Loans { get; set; } = new List<LoanEntity>();
 
     public bool IsActive => Status == AccountStatus.Active;
  
-    public static Result<Account> Create(Guid userId, string currency, AccountType accountType)
+    public static Result<AccountEntity> Create(Guid userId, string currency, AccountType accountType)
     {
         if (userId == Guid.Empty) 
-            return Result.Failure<Account>("UserId is required");
+            return Result.Failure<AccountEntity>("UserId is required");
             
         if (string.IsNullOrWhiteSpace(currency) || currency.Length != 3) 
-            return Result.Failure<Account>("Invalid currency code");
+            return Result.Failure<AccountEntity>("Invalid currency code");
 
         var rnd = new Random();
         var accountNumber = $"UA{rnd.Next(10, 99)}735692{rnd.NextInt64(1000000000, 9999999999)}";
 
-        var account = new Account(userId, accountNumber, accountType, currency);
+        var account = new AccountEntity(userId, accountNumber, accountType, currency);
 
         return Result.Success(account);
     }
@@ -60,7 +60,7 @@ public class Account : SoftDeletableEntity
             return Result.Failure("Deposit amount must be positive");
 
         if (!IsActive)
-            return Result.Failure("Account is not active");
+            return Result.Failure("AccountEntity is not active");
 
         Balance += amount;
         return Result.Success();
@@ -72,7 +72,7 @@ public class Account : SoftDeletableEntity
             return Result.Failure("Withdraw amount must be positive");
             
         if (!IsActive)
-            return Result.Failure("Account is not active");
+            return Result.Failure("AccountEntity is not active");
 
         if (AccountType != AccountType.Credit && Balance < amount)
             return Result.Failure("Insufficient funds");

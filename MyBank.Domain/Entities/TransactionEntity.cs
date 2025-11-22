@@ -3,10 +3,10 @@ using DefaultNamespace;
 
 namespace MyBank.Domain.Entities;
 
-public class Transaction : BaseEntity
+public class TransactionEntity : BaseEntity
 {
-    private Transaction() { }
-    private Transaction(Guid? fromAccountId, Guid? toAccountId, decimal amount, TransactionType type, string description)
+    private TransactionEntity() { }
+    private TransactionEntity(Guid? fromAccountId, Guid? toAccountId, decimal amount, TransactionType type, string description)
     {
         FromAccountId = fromAccountId;
         ToAccountId = toAccountId;
@@ -24,24 +24,24 @@ public class Transaction : BaseEntity
     public string Description { get; private set; } = string.Empty;
     public DateTime? CompletedAt { get; private set; }
 
-    public Account? FromAccount { get; set; }
-    public Account? ToAccount { get; set; }
+    public AccountEntity? FromAccount { get; set; }
+    public AccountEntity? ToAccount { get; set; }
 
     public bool IsCompleted => Status == TransactionStatus.Completed;
     public bool IsInternal => FromAccountId.HasValue && ToAccountId.HasValue;
     
-    public static Result<Transaction> Create(Guid? fromAccountId, Guid? toAccountId, decimal amount, TransactionType type, string description = "")
+    public static Result<TransactionEntity> Create(Guid? fromAccountId, Guid? toAccountId, decimal amount, TransactionType type, string description = "")
     {
         if (amount <= 0)
-        return Result.Failure<Transaction>("Transaction amount must be positive");
+        return Result.Failure<TransactionEntity>("TransactionEntity amount must be positive");
 
         if (fromAccountId == null && toAccountId == null)
-            return Result.Failure<Transaction>("Source or destination account must be provided");
+            return Result.Failure<TransactionEntity>("Source or destination account must be provided");
 
         if (fromAccountId == toAccountId)
-            return Result.Failure<Transaction>("Source and destination accounts cannot be the same");
+            return Result.Failure<TransactionEntity>("Source and destination accounts cannot be the same");
 
-        var transaction = new Transaction(fromAccountId, toAccountId, amount, type, description);
+        var transaction = new TransactionEntity(fromAccountId, toAccountId, amount, type, description);
 
         return Result.Success(transaction);
     }
@@ -49,7 +49,7 @@ public class Transaction : BaseEntity
     public void Complete()
     {
         if (Status != TransactionStatus.Pending)
-            throw new InvalidOperationException("Transaction is already completed or cancelled");
+            throw new InvalidOperationException("TransactionEntity is already completed or cancelled");
 
         Status = TransactionStatus.Completed;
         CompletedAt = DateTime.Now;
@@ -58,7 +58,7 @@ public class Transaction : BaseEntity
     public void Fail()
     {
         if (Status != TransactionStatus.Pending)
-            throw new InvalidOperationException("Transaction is already finalized"); 
+            throw new InvalidOperationException("TransactionEntity is already finalized"); 
 
         Status = TransactionStatus.Failed;
         CompletedAt = DateTime.Now;

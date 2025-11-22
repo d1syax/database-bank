@@ -3,10 +3,10 @@ using DefaultNamespace;
 
 namespace MyBank.Domain.Entities;
 
-public class Card : SoftDeletableEntity
+public class CardEntity : SoftDeletableEntity
 {
-    private Card() { }
-    private Card(Guid accountId, CardType cardType, string cardNumber, string cvv, DateTime expirationDate)
+    private CardEntity() { }
+    private CardEntity(Guid accountId, CardType cardType, string cardNumber, string cvv, DateTime expirationDate)
     {
         AccountId = accountId;
         CardType = cardType;
@@ -26,17 +26,17 @@ public class Card : SoftDeletableEntity
     public decimal DailyLimit { get; private set; }
     public DateTime? BlockedAt { get; private set; }
 
-    public Account Account { get; set; } = null!;
+    public AccountEntity AccountEntity { get; set; } = null!;
 
     public bool IsActive => Status == CardStatus.Active && !IsExpired;
     public bool IsExpired => ExpirationDate < DateTime.Now; 
     
     public string MaskedCardNumber => $"****-****-****-{CardNumber.Substring(Math.Max(0, CardNumber.Length - 4))}";
     
-    public static Result<Card> Create(Guid accountId, CardType cardType)
+    public static Result<CardEntity> Create(Guid accountId, CardType cardType)
     {
         if (accountId == Guid.Empty)
-            return Result.Failure<Card>("AccountId is required");
+            return Result.Failure<CardEntity>("AccountId is required");
         
         var rnd = new Random();
 
@@ -47,7 +47,7 @@ public class Card : SoftDeletableEntity
 
         DateTime expiration = DateTime.UtcNow.AddYears(4);
 
-        var card = new Card(accountId, cardType, number, cvv, expiration);
+        var card = new CardEntity(accountId, cardType, number, cvv, expiration);
 
         return Result.Success(card);
     }
@@ -55,7 +55,7 @@ public class Card : SoftDeletableEntity
     public Result Block()
     {
         if (Status == CardStatus.Blocked)
-            return Result.Failure("Card is already blocked");
+            return Result.Failure("CardEntity is already blocked");
 
         Status = CardStatus.Blocked;
         BlockedAt = DateTime.UtcNow;
