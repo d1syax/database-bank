@@ -22,6 +22,6 @@ public class CardConfigurator : IEntityTypeConfiguration<CardEntity>
         builder.HasOne(x => x.AccountEntity)
             .WithMany(x => x.Cards)
             .HasForeignKey(x => x.AccountId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .OnDelete(DeleteBehavior.Restrict); 
     }
 }

@@ -19,7 +19,7 @@ public class UserConfigurator : IEntityTypeConfiguration<UserEntity>
 
         builder.HasMany(x => x.Accounts)
             .WithOne(x => x.UserEntity)
-            .HasForeignKey(x => x.UserEntity)
+            .HasForeignKey(x => x.UserId)
             .OnDelete(DeleteBehavior.Restrict);
     }
 }
