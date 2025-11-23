@@ -1,0 +1,29 @@
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using MyBank.Domain.Entities;
+
+namespace MyBank.Infrastructure.Persistance.Configurations;
+
+public class TransactionConfigurator : IEntityTypeConfiguration<TransactionEntity>
+{
+    public void Configure(EntityTypeBuilder<TransactionEntity> builder)
+    {
+        builder.HasKey(x => x.Id);
+
+        builder.Property(x => x.Amount).HasPrecision(18, 2);
+        builder.Property(x => x.Description).HasMaxLength(256);
+
+        builder.Property(x => x.TransactionType).HasConversion<string>();
+        builder.Property(x => x.Status).HasConversion<string>();
+
+        builder.HasOne(x => x.FromAccount)
+            .WithMany(x => x.OutgoingTransactions)
+            .HasForeignKey(x => x.FromAccountId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne(x => x.ToAccount)
+            .WithMany(x => x.IncomingTransactions)
+            .HasForeignKey(x => x.ToAccountId)
+            .OnDelete(DeleteBehavior.Restrict);
+    }
+}
