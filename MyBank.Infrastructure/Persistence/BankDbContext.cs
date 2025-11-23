@@ -14,7 +14,7 @@ public class BankDbContext : DbContext
     {
     }
     
-    public DbSet<UserEntity> Users { get; set; } = null!;
+    public DbSet<UserEntity?> Users { get; set; } = null!;
     public DbSet<AccountEntity> Accounts { get; set; } = null!;
     public DbSet<LoanEntity> Loans { get; set; } = null!;
     public DbSet<LoanPaymentEntity> LoanPayments { get; set; } = null!;
@@ -36,8 +36,8 @@ public class BankDbContext : DbContext
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         var entries = ChangeTracker.Entries()
-            .Where(e => e.Entity is BaseEntity && 
-                        (e.State == EntityState.Added || e.State == EntityState.Modified));
+            .Where(x => x.Entity is BaseEntity && 
+                        (x.State == EntityState.Added || x.State == EntityState.Modified));
 
         foreach (var entry in entries)
         {

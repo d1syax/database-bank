@@ -48,4 +48,13 @@ public class UserEntity : SoftDeletableEntity
 
         return Result.Success(user);
     }
+    
+    public Result Delete()
+    {
+        if (DeletedAt != null) return Result.Failure("User already deleted");
+
+        DeletedAt = DateTime.Now;
+
+        return Result.Success();
+    }
 }

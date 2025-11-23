@@ -70,4 +70,19 @@ public class CardEntity : SoftDeletableEntity
         DailyLimit = newLimit;
         return Result.Success();
     }
+    
+    public Result Delete()
+    {
+        if (DeletedAt != null) return Result.Failure("You can't delete the card");
+
+        DeletedAt = DateTime.Now;
+        
+        if (Status != CardStatus.Blocked)
+        {
+            Status = CardStatus.Blocked;
+            BlockedAt = DateTime.Now;
+        }
+
+        return Result.Success();
+    }
 }
