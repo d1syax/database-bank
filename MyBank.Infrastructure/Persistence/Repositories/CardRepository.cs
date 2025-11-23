@@ -27,7 +27,7 @@ public class CardRepository : ICardRepository
 
     public async Task<List<CardEntity>> GetByAccountIdAsync(Guid accountId, CancellationToken cancellationToken = default)
     {
-        return await _context.Cards.Where(x => x.AccountId == accountId && x.Status == CardStatus.Active).ToListAsync(cancellationToken);
+        return await _context.Cards.Where(x => x.AccountId == accountId).ToListAsync(cancellationToken);
     }
 
     public async Task<bool> ExistsByCardNumberAsync(string cardNumber, CancellationToken cancellationToken = default)
