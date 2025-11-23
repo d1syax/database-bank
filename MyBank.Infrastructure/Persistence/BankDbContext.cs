@@ -3,9 +3,9 @@ using DefaultNamespace;
 using Microsoft.EntityFrameworkCore;
 using MyBank.Domain.Entities;
 using MyBank.Domain.Interfaces;
-using MyBank.Infrastructure.Persistance.Configurations;
+using MyBank.Infrastructure.Persistence.Configurations;
 
-namespace MyBank.Infrastructure.Persistance;
+namespace MyBank.Infrastructure.Persistence;
 
 
 public class BankDbContext : DbContext

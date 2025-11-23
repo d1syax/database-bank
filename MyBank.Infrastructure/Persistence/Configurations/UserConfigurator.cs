@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using MyBank.Domain.Entities;
 
-namespace MyBank.Infrastructure.Persistance.Configurations;
+namespace MyBank.Infrastructure.Persistence.Configurations;
 
 public class UserConfigurator : IEntityTypeConfiguration<UserEntity>
 {

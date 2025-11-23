@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using MyBank.Domain.Entities;
 using MyBank.Domain.Interfaces;
 
-namespace MyBank.Infrastructure.Persistance.Repositories;
+namespace MyBank.Infrastructure.Persistence.Repositories;
 
 public class UserRepository : IUserRepository
 {

@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MyBank.Domain.Entities;
 using MyBank.Domain.Interfaces;
-using MyBank.Infrastructure.Persistance;
+using MyBank.Infrastructure.Persistence;
 
 namespace MyBank.Infrastructure.Persistence.Repositories;
 
