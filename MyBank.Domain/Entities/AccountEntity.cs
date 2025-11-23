@@ -47,7 +47,7 @@ public class AccountEntity : SoftDeletableEntity
             return Result.Failure<AccountEntity>("Invalid currency code");
 
         var rnd = new Random();
-        var accountNumber = $"UA{rnd.Next(10, 99)}735692{rnd.NextInt64(1000000000, 9999999999)}";
+        var accountNumber = $"UA{DateTime.UtcNow:yyMM}{Guid.NewGuid().ToString("N").Substring(0, 16)}";
 
         var account = new AccountEntity(userId, accountNumber, accountType, currency);
 
@@ -81,9 +81,10 @@ public class AccountEntity : SoftDeletableEntity
         return Result.Success();
     }
 
-    public void Close()
+    public Result Close()
     {
         Status = AccountStatus.Closed;
         ClosedAt = DateTime.UtcNow;
+        return Result.Success();
     }
 }

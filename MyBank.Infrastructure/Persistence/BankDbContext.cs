@@ -14,7 +14,7 @@ public class BankDbContext : DbContext
     {
     }
     
-    public DbSet<UserEntity?> Users { get; set; } = null!;
+    public DbSet<UserEntity> Users { get; set; } = null!;
     public DbSet<AccountEntity> Accounts { get; set; } = null!;
     public DbSet<LoanEntity> Loans { get; set; } = null!;
     public DbSet<LoanPaymentEntity> LoanPayments { get; set; } = null!;

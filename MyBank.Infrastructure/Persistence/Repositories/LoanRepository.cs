@@ -56,6 +56,7 @@ public class LoanRepository : ILoanRepository
     public Task DeleteAsync(LoanEntity loan, CancellationToken cancellationToken = default)
     {
         loan.IsDeleted = true;
+        loan.DeletedAt = DateTime.Now;
         _context.Loans.Update(loan);
         return Task.CompletedTask;
     }

@@ -49,6 +49,7 @@ public class CardRepository : ICardRepository
     public Task DeleteAsync(CardEntity card, CancellationToken cancellationToken = default)
     {
         card.IsDeleted = true;
+        card.DeletedAt = DateTime.Now;
         _context.Cards.Update(card);
         return Task.CompletedTask;
     }

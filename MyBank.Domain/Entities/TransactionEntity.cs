@@ -46,21 +46,23 @@ public class TransactionEntity : BaseEntity
         return Result.Success(transaction);
     }
 
-    public void Complete()
+    public Result Complete()
     {
         if (Status != TransactionStatus.Pending)
-            throw new InvalidOperationException("TransactionEntity is already completed or cancelled");
+            return Result.Failure("TransactionEntity is already completed");
 
         Status = TransactionStatus.Completed;
         CompletedAt = DateTime.Now;
+        return Result.Success();
     }
 
-    public void Fail()
+    public Result Fail()
     {
         if (Status != TransactionStatus.Pending)
-            throw new InvalidOperationException("TransactionEntity is already finalized"); 
+            return Result.Failure("TransactionEntity is already finalized"); 
 
         Status = TransactionStatus.Failed;
         CompletedAt = DateTime.Now;
+        return Result.Success();
     }
 }

@@ -43,6 +43,7 @@ public class AccountRepository : IAccountRepository
     public Task DeleteAsync(AccountEntity account, CancellationToken cancellationToken = default)
     {
         account.IsDeleted = true;
+        account.DeletedAt = DateTime.Now;
         _context.Accounts.Update(account);
         return Task.CompletedTask;
     }

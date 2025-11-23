@@ -38,13 +38,11 @@ public class CardEntity : SoftDeletableEntity
         if (accountId == Guid.Empty)
             return Result.Failure<CardEntity>("AccountId is required");
         
-        var rnd = new Random();
 
-        string prefix = cardType == CardType.Credit ? "5" : "4";
-        string number = $"{prefix}{rnd.Next(100, 999)}{rnd.Next(1000, 9999)}{rnd.Next(1000, 9999)}{rnd.Next(1000, 9999)}";
-
-        string cvv = rnd.Next(100, 999).ToString();
-
+        var guidPortion = Guid.NewGuid().ToString("N").Substring(0, 12);
+        var prefix = cardType == CardType.Credit ? "5" : "4";
+        var number = $"{prefix}{guidPortion}";
+        var cvv = new Random().Next(100, 999).ToString();
         DateTime expiration = DateTime.UtcNow.AddYears(4);
 
         var card = new CardEntity(accountId, cardType, number, cvv, expiration);

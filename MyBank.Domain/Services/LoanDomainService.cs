@@ -24,7 +24,6 @@ public class LoanDomainService
         var depositResult = targetAccount.Deposit(amount);
         if (depositResult.IsFailure)
         {
-            targetAccount.Withdraw(amount);
             return Result.Failure<(LoanEntity, TransactionEntity)>($"Failed to deposit loan funds: {depositResult.Error}");
         }
 

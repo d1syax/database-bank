@@ -2,6 +2,7 @@
 using CSharpFunctionalExtensions;
 using DefaultNamespace;
 using MyBank.Domain.Entities;
+using MyBank.Domain.Interfaces;
 
 namespace MyBank.Domain.Services;
 
@@ -18,13 +19,12 @@ public class TransferDomainService
 
         var withdrawResult = fromAccount.Withdraw(amount);
         if (withdrawResult.IsFailure)
-            return Result.Failure<TransactionEntity>($"Withdrawal failed: {withdrawResult.Error}");
+            return Result.Failure<TransactionEntity>($"{withdrawResult.Error}");
 
         var depositResult = toAccount.Deposit(amount);
         if (depositResult.IsFailure)
         {
-            fromAccount.Deposit(amount);
-            return Result.Failure<TransactionEntity>($"Deposit failed: {depositResult.Error}");
+            return Result.Failure<TransactionEntity>($"{depositResult.Error}");
         }
 
         var transactionResult = TransactionEntity.Create(

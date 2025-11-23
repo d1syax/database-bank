@@ -10,3 +10,4 @@ C:\Users\boyak\Documents\GitHub\database-bank\MyBank.Domain\obj\Debug\net9.0\MyB
 C:\Users\boyak\Documents\GitHub\database-bank\MyBank.Domain\obj\Debug\net9.0\refint\MyBank.Domain.dll
 C:\Users\boyak\Documents\GitHub\database-bank\MyBank.Domain\obj\Debug\net9.0\MyBank.Domain.pdb
 C:\Users\boyak\Documents\GitHub\database-bank\MyBank.Domain\obj\Debug\net9.0\ref\MyBank.Domain.dll
+C:\Users\boyak\Documents\GitHub\database-bank\MyBank.Domain\obj\Debug\net9.0\MyBank.Domain.csproj.AssemblyReference.cache

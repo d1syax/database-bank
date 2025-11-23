@@ -1,4 +1,5 @@
-﻿using MyBank.Domain.Interfaces;
+﻿using Microsoft.EntityFrameworkCore.Storage;
+using MyBank.Domain.Interfaces;
 
 namespace MyBank.Infrastructure.Persistence;
 
@@ -11,8 +12,14 @@ public class UnitOfWork : IUnitOfWork
         _context = context;
     }
 
-    public Task<int> SaveChangesAsync(CancellationToken ct = default)
+    public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
-        return _context.SaveChangesAsync(ct);
+        return _context.SaveChangesAsync(cancellationToken);
+    }
+
+    public Task<IDbContextTransaction> BeginTransactionAsync()
+    {
+        return _context.Database.BeginTransactionAsync();
     }
 }
+

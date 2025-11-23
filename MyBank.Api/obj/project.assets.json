@@ -935,7 +935,8 @@
         "type": "project",
         "framework": ".NETCoreApp,Version=v9.0",
         "dependencies": {
-          "CSharpFunctionalExtensions": "3.6.0"
+          "CSharpFunctionalExtensions": "3.6.0",
+          "Microsoft.EntityFrameworkCore": "9.0.8"
         },
         "compile": {
           "bin/placeholder/MyBank.Domain.dll": {}
