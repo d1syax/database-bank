@@ -47,6 +47,7 @@ public class UserRepository : IUserRepository
 
     public Task DeleteAsync(UserEntity user, CancellationToken cancellationToken = default)
     {
+        user.IsDeleted = true;
         _context.Users.Update(user);
         return Task.CompletedTask;
     }

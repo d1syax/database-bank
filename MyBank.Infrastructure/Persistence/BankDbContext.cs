@@ -27,10 +27,10 @@ public class BankDbContext : DbContext
         
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(BankDbContext).Assembly);
 
-        modelBuilder.Entity<UserEntity>().HasQueryFilter(u => !u.IsDeleted);
-        modelBuilder.Entity<AccountEntity>().HasQueryFilter(a => !a.IsDeleted);
-        modelBuilder.Entity<CardEntity>().HasQueryFilter(c => !c.IsDeleted);
-        modelBuilder.Entity<LoanEntity>().HasQueryFilter(l => !l.IsDeleted);
+        modelBuilder.Entity<UserEntity>().HasQueryFilter(x => !x.IsDeleted);
+        modelBuilder.Entity<AccountEntity>().HasQueryFilter(x => !x.IsDeleted);
+        modelBuilder.Entity<CardEntity>().HasQueryFilter(x => !x.IsDeleted);
+        modelBuilder.Entity<LoanEntity>().HasQueryFilter(x => !x.IsDeleted);
     }
     
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

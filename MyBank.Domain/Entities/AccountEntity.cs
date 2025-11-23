@@ -86,23 +86,4 @@ public class AccountEntity : SoftDeletableEntity
         Status = AccountStatus.Closed;
         ClosedAt = DateTime.UtcNow;
     }
-    
-    public Result Delete()
-    {
-        if (Balance != 0)
-            return Result.Failure("You can't delete an account that has funds in it");
-
-        if (DeletedAt != null)
-            return Result.Failure("The account has already been deleted");
-
-        DeletedAt = DateTime.Now;
-        
-        if (Status != AccountStatus.Closed)
-        {
-            Status = AccountStatus.Closed;
-            ClosedAt = DateTime.Now;
-        }
-
-        return Result.Success();
-    }
 }
