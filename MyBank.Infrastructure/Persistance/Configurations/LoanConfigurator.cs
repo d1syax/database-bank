@@ -14,7 +14,7 @@ public class LoanConfigurator : IEntityTypeConfiguration<LoanEntity>
         builder.Property(x => x.InterestAmount).HasPrecision(18, 2);
         builder.Property(x => x.PaidAmount).HasPrecision(18, 2);
         
-        builder.Property(x => x.Status).HasConversion<string>();
+        builder.Property(x => x.Status).HasConversion<string>().IsRequired();
 
         builder.HasOne(x => x.UserEntity)
             .WithMany(x => x.Loans)

@@ -13,8 +13,8 @@ public class TransactionConfigurator : IEntityTypeConfiguration<TransactionEntit
         builder.Property(x => x.Amount).HasPrecision(18, 2);
         builder.Property(x => x.Description).HasMaxLength(256);
 
-        builder.Property(x => x.TransactionType).HasConversion<string>();
-        builder.Property(x => x.Status).HasConversion<string>();
+        builder.Property(x => x.TransactionType).HasConversion<string>().IsRequired();
+        builder.Property(x => x.Status).HasConversion<string>().IsRequired();
 
         builder.HasOne(x => x.FromAccount)
             .WithMany(x => x.OutgoingTransactions)
