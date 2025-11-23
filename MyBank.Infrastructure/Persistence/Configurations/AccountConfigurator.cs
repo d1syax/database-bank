@@ -20,6 +20,13 @@ public class AccountConfigurator : IEntityTypeConfiguration<AccountEntity>
 
         builder.HasIndex(x => x.AccountNumber).IsUnique();
 
+        builder.Ignore(x => x.IsActive);
+
         builder.Property(x => x.RowVersion).IsRowVersion();
+
+        builder.HasOne(x => x.UserEntity)
+            .WithMany(x => x.Accounts)
+            .HasForeignKey(x => x.UserId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

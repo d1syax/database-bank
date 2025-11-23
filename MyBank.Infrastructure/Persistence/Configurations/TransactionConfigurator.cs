@@ -15,6 +15,11 @@ public class TransactionConfigurator : IEntityTypeConfiguration<TransactionEntit
 
         builder.Property(x => x.TransactionType).HasConversion<string>().IsRequired();
         builder.Property(x => x.Status).HasConversion<string>().IsRequired();
+        
+        builder.Ignore(x => x.IsCompleted);
+        builder.Ignore(x => x.IsInternal);
+        
+        builder.HasIndex(x => x.CreatedAt);
 
         builder.HasOne(x => x.FromAccount)
             .WithMany(x => x.OutgoingTransactions)

@@ -17,9 +17,7 @@ public class UserConfigurator : IEntityTypeConfiguration<UserEntity>
 
         builder.HasIndex(x => x.Email).IsUnique();
 
-        builder.HasMany(x => x.Accounts)
-            .WithOne(x => x.UserEntity)
-            .HasForeignKey(x => x.UserId)
-            .OnDelete(DeleteBehavior.Restrict);
+        builder.Ignore(x => x.FullName);
+        builder.Ignore(x => x.Age);
     }
 }

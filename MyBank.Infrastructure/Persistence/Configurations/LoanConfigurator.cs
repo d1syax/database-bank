@@ -16,6 +16,9 @@ public class LoanConfigurator : IEntityTypeConfiguration<LoanEntity>
         
         builder.Property(x => x.Status).HasConversion<string>().IsRequired();
 
+        builder.Ignore(x => x.TotalAmountToRepay);
+        builder.Ignore(x => x.IsFullyPaid);
+
         builder.HasOne(x => x.UserEntity)
             .WithMany(x => x.Loans)
             .HasForeignKey(x => x.UserId)

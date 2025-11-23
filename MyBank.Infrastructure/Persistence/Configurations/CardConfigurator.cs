@@ -19,9 +19,13 @@ public class CardConfigurator : IEntityTypeConfiguration<CardEntity>
 
         builder.HasIndex(x => x.CardNumber).IsUnique();
 
+        builder.Ignore(x => x.IsActive);
+        builder.Ignore(x => x.IsExpired);
+        builder.Ignore(x => x.MaskedCardNumber);
+
         builder.HasOne(x => x.AccountEntity)
             .WithMany(x => x.Cards)
             .HasForeignKey(x => x.AccountId)
-            .OnDelete(DeleteBehavior.Restrict); 
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }
