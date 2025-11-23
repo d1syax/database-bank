@@ -2,6 +2,19 @@
   "version": 3,
   "targets": {
     "net9.0": {
+      "CSharpFunctionalExtensions/3.6.0": {
+        "type": "package",
+        "compile": {
+          "lib/net8.0/CSharpFunctionalExtensions.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0/CSharpFunctionalExtensions.dll": {
+            "related": ".pdb;.xml"
+          }
+        }
+      },
       "Humanizer.Core/2.14.1": {
         "type": "package",
         "compile": {
@@ -917,10 +930,43 @@
         "build": {
           "buildTransitive/net6.0/_._": {}
         }
+      },
+      "MyBank.Domain/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v9.0",
+        "dependencies": {
+          "CSharpFunctionalExtensions": "3.6.0"
+        },
+        "compile": {
+          "bin/placeholder/MyBank.Domain.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/MyBank.Domain.dll": {}
+        }
       }
     }
   },
   "libraries": {
+    "CSharpFunctionalExtensions/3.6.0": {
+      "sha512": "c+oWbfDKKjpOLPMxn/iPn1GL24YTJMtOiGfj0AsDKZ2v6/Mr6V7BfzfWLg6KqNRx3KRy3KcQE680SwvDTI/jcg==",
+      "type": "package",
+      "path": "csharpfunctionalextensions/3.6.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "csharpfunctionalextensions.3.6.0.nupkg.sha512",
+        "csharpfunctionalextensions.nuspec",
+        "lib/net6.0/CSharpFunctionalExtensions.dll",
+        "lib/net6.0/CSharpFunctionalExtensions.pdb",
+        "lib/net6.0/CSharpFunctionalExtensions.xml",
+        "lib/net8.0/CSharpFunctionalExtensions.dll",
+        "lib/net8.0/CSharpFunctionalExtensions.pdb",
+        "lib/net8.0/CSharpFunctionalExtensions.xml",
+        "lib/netstandard2.0/CSharpFunctionalExtensions.dll",
+        "lib/netstandard2.0/CSharpFunctionalExtensions.pdb",
+        "lib/netstandard2.0/CSharpFunctionalExtensions.xml"
+      ]
+    },
     "Humanizer.Core/2.14.1": {
       "sha512": "lQKvtaTDOXnoVJ20ibTuSIOf2i0uO0MPbDhd1jm238I+U/2ZnRENj0cktKZhtchBMtCUSRQ5v4xBCUbKNmyVMw==",
       "type": "package",
@@ -2804,6 +2850,11 @@
         "system.threading.channels.nuspec",
         "useSharedDesignerContext.txt"
       ]
+    },
+    "MyBank.Domain/1.0.0": {
+      "type": "project",
+      "path": "../MyBank.Domain/MyBank.Domain.csproj",
+      "msbuildProject": "../MyBank.Domain/MyBank.Domain.csproj"
     }
   },
   "projectFileDependencyGroups": {
@@ -2811,6 +2862,7 @@
       "Microsoft.EntityFrameworkCore >= 9.0.8",
       "Microsoft.EntityFrameworkCore.Design >= 9.0.8",
       "Microsoft.EntityFrameworkCore.Tools >= 9.0.8",
+      "MyBank.Domain >= 1.0.0",
       "Npgsql.EntityFrameworkCore.PostgreSQL >= 9.0.4"
     ]
   },
@@ -2845,7 +2897,11 @@
       "frameworks": {
         "net9.0": {
           "targetAlias": "net9.0",
-          "projectReferences": {}
+          "projectReferences": {
+            "C:\\Users\\boyak\\Documents\\GitHub\\database-bank\\MyBank.Domain\\MyBank.Domain.csproj": {
+              "projectPath": "C:\\Users\\boyak\\Documents\\GitHub\\database-bank\\MyBank.Domain\\MyBank.Domain.csproj"
+            }
+          }
         }
       },
       "warningProperties": {

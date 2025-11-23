@@ -7,7 +7,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Folder Include="Data\" />
         <Folder Include="Repositories\" />
     </ItemGroup>
 
@@ -22,6 +21,10 @@
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       </PackageReference>
       <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\MyBank.Domain\MyBank.Domain.csproj" />
     </ItemGroup>
 
 </Project>
