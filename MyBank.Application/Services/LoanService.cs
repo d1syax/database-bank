@@ -26,6 +26,26 @@ public class LoanService
         _unitOfWork = unitOfWork;
         _loanDomainService = new LoanDomainService();
     }
+    
+    public async Task<List<LoanResponse>> GetUserLoansAsync(Guid userId, CancellationToken ct)
+    {
+        var loans = await _loanRepository.GetByUserIdAsync(userId, ct);
+        
+        var response = new List<LoanResponse>();
+        foreach (var loan in loans)
+        {
+            response.Add(new LoanResponse(
+                loan.Id, 
+                loan.PrincipalAmount, 
+                loan.InterestAmount, 
+                loan.PaidAmount,
+                loan.TotalAmountToRepay, 
+                loan.Status.ToString(), 
+                loan.IssuedAt
+            ));
+        }
+        return response;
+    }
 
     public async Task<Result<LoanResponse>> IssueLoanAsync(CreateLoanRequest request, CancellationToken ct)
     {
