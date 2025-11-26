@@ -9,7 +9,6 @@ namespace MyBank.Api.Controllers;
 public class TransactionsController : ControllerBase
 {
     private readonly TransactionService _transactionService;
-
     public TransactionsController(TransactionService transactionService)
     {
         _transactionService = transactionService;
