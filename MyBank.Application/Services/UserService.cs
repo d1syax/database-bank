@@ -78,7 +78,7 @@ public class UserService
         }
         catch (Exception ex)
         {
-            return Result.Failure<UserResponse>("{ex.Message}");
+            return Result.Failure<UserResponse>($"{ex.Message}");
         }
     }
 
