@@ -22,8 +22,8 @@ public class LoansController : ControllerBase
         return Ok(loans);
     }
 
-    [HttpPost("issue")]
-    public async Task<IActionResult> IssueLoan([FromBody] CreateLoanRequest request, CancellationToken ct)
+    [HttpPost("loan")]
+    public async Task<IActionResult> IssueLoan(CreateLoanRequest request, CancellationToken ct)
     {
         var result = await _loanService.IssueLoanAsync(request, ct);
         
@@ -34,7 +34,7 @@ public class LoansController : ControllerBase
     }
 
     [HttpPost("repay")]
-    public async Task<IActionResult> RepayLoan([FromBody] RepayLoanRequest request, CancellationToken ct)
+    public async Task<IActionResult> RepayLoan(RepayLoanRequest request, CancellationToken ct)
     {
         var result = await _loanService.RepayLoanAsync(request, ct);
         
