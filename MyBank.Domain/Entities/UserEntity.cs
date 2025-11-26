@@ -48,4 +48,19 @@ public class UserEntity : SoftDeletableEntity
 
         return Result.Success(user);
     }
+    
+    public Result UpdateProfile(string newFirstName, string newLastName, string newPhone)
+    {
+        if (string.IsNullOrWhiteSpace(newFirstName))
+            return Result.Failure("Cannot be empty");
+    
+        if (string.IsNullOrWhiteSpace(newLastName))
+            return Result.Failure("Cannot be empty");
+
+        FirstName = newFirstName;
+        LastName = newLastName;
+        PhoneNumber = newPhone;
+
+        return Result.Success();
+    }
 }
