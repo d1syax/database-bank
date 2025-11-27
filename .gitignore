@@ -1,7 +1,5 @@
+.idea/
 bin/
 obj/
-
-.idea/
-.vs/
-*.user
-*.suo
+**/bin/
+**/obj/
