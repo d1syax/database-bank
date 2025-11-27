@@ -1,4 +1,5 @@
 ﻿using CSharpFunctionalExtensions;
+using Microsoft.EntityFrameworkCore;
 using MyBank.Api.DTOs;
 using MyBank.Api.DTOs.Responses;
 using MyBank.Domain.Interfaces;
@@ -34,6 +35,9 @@ public class TransactionService
         using var transaction = await _unitOfWork.BeginTransactionAsync();
         try
         {
+            var fromAccountRowVersion = fromAccount.RowVersion;
+            var toAccountRowVersion = toAccount.RowVersion;
+            
             var transferResult = _transferDomainService.Transfer(
                 fromAccount, toAccount, request.Amount, request.Description);
 
@@ -56,6 +60,12 @@ public class TransactionService
                 transactionEntity.Description,
                 transactionEntity.CreatedAt
             ));
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            await transaction.RollbackAsync(ct);
+            return Result.Failure<TransactionResponse>(
+                "Transfer failed. Please try again");
         }
         catch (Exception ex)
         {

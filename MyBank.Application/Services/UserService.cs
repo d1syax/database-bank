@@ -112,4 +112,24 @@ public class UserService
 
         return Result.Success();
     }
+    
+    public async Task<List<UserResponse>> SearchUsersAsync(string searchTerm, int page = 1, int pageSize = 10, CancellationToken cancellationToken = default)
+    {
+        var users = await _userRepository.GetAllAsync(cancellationToken);
+    
+        var filtered = users
+            .Where(x => x.Email.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) 
+                        || x.FirstName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)
+                        || x.LastName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)
+                        || x.PhoneNumber.Contains(searchTerm))
+            .OrderBy(x => x.LastName)
+            .ThenBy(x => x.FirstName)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .Select(x => new UserResponse(
+                x.Id, x.FirstName, x.LastName, x.Email, x.PhoneNumber, x.CreatedAt))
+            .ToList();
+
+        return filtered;
+    }
 }
