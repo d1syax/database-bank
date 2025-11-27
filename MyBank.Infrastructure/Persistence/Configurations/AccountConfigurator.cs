@@ -19,10 +19,18 @@ public class AccountConfigurator : IEntityTypeConfiguration<AccountEntity>
         builder.Property(x => x.AccountNumber).HasMaxLength(30).IsRequired();
 
         builder.HasIndex(x => x.AccountNumber).IsUnique();
+        builder.HasIndex(x => x.UserId);
+        
+        builder.HasIndex(x => new { x.UserId, x.AccountType, x.Status });
+        builder.HasIndex(x => new { x.Currency, x.Balance });
 
         builder.Ignore(x => x.IsActive);
 
         builder.Property(x => x.RowVersion).IsRowVersion();
+        
+        builder.ToTable(t => t.HasCheckConstraint(
+            "CK_Account_Balance_NonNegative", 
+            "[Balance] >= 0"));
 
         builder.HasOne(x => x.UserEntity)
             .WithMany(x => x.Accounts)

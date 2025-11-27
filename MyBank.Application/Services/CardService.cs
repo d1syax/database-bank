@@ -5,7 +5,6 @@ using MyBank.Api.DTOs;
 using MyBank.Api.DTOs.Responses;
 using MyBank.Domain.Entities;
 using MyBank.Domain.Interfaces;
-using DefaultNamespace;
 
 public class CardService
 {

@@ -18,6 +18,17 @@ public class LoanConfigurator : IEntityTypeConfiguration<LoanEntity>
 
         builder.Ignore(x => x.TotalAmountToRepay);
         builder.Ignore(x => x.IsFullyPaid);
+        
+        builder.HasIndex(x => new { x.UserId, x.Status });
+        
+        builder.HasIndex(x => x.AccountId);
+        
+        builder.ToTable(t => 
+        {
+            t.HasCheckConstraint("CK_Loan_PrincipalAmount_Positive", "[PrincipalAmount] > 0");
+            t.HasCheckConstraint("CK_Loan_InterestAmount_NonNegative", "[InterestAmount] >= 0");
+            t.HasCheckConstraint("CK_Loan_PaidAmount_NonNegative", "[PaidAmount] >= 0");
+        });
 
         builder.HasOne(x => x.UserEntity)
             .WithMany(x => x.Loans)

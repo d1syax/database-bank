@@ -1,9 +1,7 @@
-namespace DefaultNamespace;
-
+namespace MyBank.Domain.Enums;
 public enum AccountType
 {
-    Checking = 1,
+    Debit = 1,
     Savings = 2,
     Credit = 3,
-    Debit = 4
 }

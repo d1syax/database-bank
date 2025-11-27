@@ -1,6 +1,6 @@
-﻿using DefaultNamespace;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using MyBank.Domain.Entities;
+using MyBank.Domain.Enums;
 using MyBank.Domain.Interfaces;
 using MyBank.Infrastructure.Persistence;
 
@@ -29,15 +29,10 @@ public class LoanRepository : ILoanRepository
     {
         return await _context.Loans.Where(x => x.AccountId == accountId).ToListAsync(cancellationToken);
     }
-
-    public async Task<LoanEntity?> GetByIdWithPaymentsAsync(Guid id, CancellationToken cancellationToken = default)
-    {
-        return await _context.Loans.Include(x => x.Payments).FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
-    }
-
+    
     public async Task<List<LoanEntity>> GetOverdueLoansAsync(CancellationToken cancellationToken = default)
     {
-        var overDue = DateTime.Now.AddDays(-30);
+        var overDue = DateTime.UtcNow.AddDays(-30);
 
         return await _context.Loans.Where(x => x.Status == LoanStatus.Active && x.IssuedAt < overDue).ToListAsync(cancellationToken);
     }
@@ -56,7 +51,7 @@ public class LoanRepository : ILoanRepository
     public Task DeleteAsync(LoanEntity loan, CancellationToken cancellationToken = default)
     {
         loan.IsDeleted = true;
-        loan.DeletedAt = DateTime.Now;
+        loan.DeletedAt = DateTime.UtcNow;
         _context.Loans.Update(loan);
         return Task.CompletedTask;
     }

@@ -1,5 +1,4 @@
-﻿using DefaultNamespace;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using MyBank.Domain.Entities;
 using MyBank.Domain.Interfaces;
 using MyBank.Infrastructure.Persistence;
@@ -49,7 +48,7 @@ public class CardRepository : ICardRepository
     public Task DeleteAsync(CardEntity card, CancellationToken cancellationToken = default)
     {
         card.IsDeleted = true;
-        card.DeletedAt = DateTime.Now;
+        card.DeletedAt = DateTime.UtcNow;
         _context.Cards.Update(card);
         return Task.CompletedTask;
     }

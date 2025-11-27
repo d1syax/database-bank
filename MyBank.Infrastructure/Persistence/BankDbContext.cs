@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
-using DefaultNamespace;
 using Microsoft.EntityFrameworkCore;
+using MyBank.Domain.Common;
 using MyBank.Domain.Entities;
 using MyBank.Domain.Interfaces;
 using MyBank.Infrastructure.Persistence.Configurations;
@@ -17,7 +17,6 @@ public class BankDbContext : DbContext
     public DbSet<UserEntity> Users { get; set; } = null!;
     public DbSet<AccountEntity> Accounts { get; set; } = null!;
     public DbSet<LoanEntity> Loans { get; set; } = null!;
-    public DbSet<LoanPaymentEntity> LoanPayments { get; set; } = null!;
     public DbSet<TransactionEntity> Transactions { get; set; } = null!;
     public DbSet<CardEntity> Cards { get; set; } = null!;
 
@@ -45,10 +44,10 @@ public class BankDbContext : DbContext
 
             if (entry.State == EntityState.Added)
             {
-                entity.CreatedAt = DateTime.Now;
+                entity.CreatedAt = DateTime.UtcNow;
             }
 
-            entity.UpdatedAt = DateTime.Now;
+            entity.UpdatedAt = DateTime.UtcNow;
         }
 
         return base.SaveChangesAsync(cancellationToken);

@@ -1,11 +1,7 @@
-namespace DefaultNamespace;
-
+namespace MyBank.Domain.Enums;
 public enum TransactionType
 {
     Transfer = 1,
-    Deposit = 2,
-    Withdrawal = 3,
-    Fee = 4,
-    LoanDisbursement = 5,
-    LoanPayment = 6
+    LoanDisbursement = 2,
+    LoanPayment = 3
 }

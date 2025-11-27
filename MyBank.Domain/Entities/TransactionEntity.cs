@@ -1,5 +1,6 @@
 ﻿using CSharpFunctionalExtensions;
-using DefaultNamespace;
+using MyBank.Domain.Common; 
+using MyBank.Domain.Enums; 
 
 namespace MyBank.Domain.Entities;
 
@@ -17,7 +18,7 @@ public class TransactionEntity : BaseEntity
     }
     public Guid? FromAccountId { get; private set; } 
     public Guid? ToAccountId { get; private set; } 
-        
+    
     public decimal Amount { get; private set; }
     public TransactionType TransactionType { get; private set; }
     public TransactionStatus Status { get; private set; }
@@ -34,15 +35,12 @@ public class TransactionEntity : BaseEntity
     {
         if (amount <= 0)
         return Result.Failure<TransactionEntity>("TransactionEntity amount must be positive");
-
         if (fromAccountId == null && toAccountId == null)
             return Result.Failure<TransactionEntity>("Source or destination account must be provided");
-
         if (fromAccountId == toAccountId)
             return Result.Failure<TransactionEntity>("Source and destination accounts cannot be the same");
-
+        
         var transaction = new TransactionEntity(fromAccountId, toAccountId, amount, type, description);
-
         return Result.Success(transaction);
     }
 
@@ -52,7 +50,7 @@ public class TransactionEntity : BaseEntity
             return Result.Failure("TransactionEntity is already completed");
 
         Status = TransactionStatus.Completed;
-        CompletedAt = DateTime.Now;
+        CompletedAt = DateTime.UtcNow;
         return Result.Success();
     }
 
@@ -62,7 +60,7 @@ public class TransactionEntity : BaseEntity
             return Result.Failure("TransactionEntity is already finalized"); 
 
         Status = TransactionStatus.Failed;
-        CompletedAt = DateTime.Now;
+        CompletedAt = DateTime.UtcNow;
         return Result.Success();
     }
 }

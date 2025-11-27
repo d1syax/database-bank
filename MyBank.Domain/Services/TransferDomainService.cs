@@ -1,21 +1,18 @@
-﻿using System.Transactions;
-using CSharpFunctionalExtensions;
-using DefaultNamespace;
+﻿using CSharpFunctionalExtensions;
 using MyBank.Domain.Entities;
-using MyBank.Domain.Interfaces;
+using MyBank.Domain.Enums;
 
 namespace MyBank.Domain.Services;
-
 
 public class TransferDomainService
 {
     public Result<TransactionEntity> Transfer(AccountEntity fromAccount, AccountEntity toAccount, decimal amount, string description)
     {
         if (fromAccount.Id == toAccount.Id)
-            return Result.Failure<TransactionEntity>("Cannot transfer money to the same account.");
+            return Result.Failure<TransactionEntity>("Cannot transfer money to the same account");
 
         if (fromAccount.Currency != toAccount.Currency)
-            return Result.Failure<TransactionEntity>("Transfers between different currencies are not supported yet.");
+            return Result.Failure<TransactionEntity>("Transfers between different currencies are not supported yet");
 
         var withdrawResult = fromAccount.Withdraw(amount);
         if (withdrawResult.IsFailure)

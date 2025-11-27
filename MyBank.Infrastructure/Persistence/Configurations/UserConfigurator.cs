@@ -19,5 +19,16 @@ public class UserConfigurator : IEntityTypeConfiguration<UserEntity>
 
         builder.Ignore(x => x.FullName);
         builder.Ignore(x => x.Age);
+        
+        builder.HasCheckConstraint(
+            "CK_User_MinAge",
+            "[DateOfBirth] <= (CURRENT_DATE - INTERVAL '14 years')"
+        );
+
+        builder.HasCheckConstraint(
+            "CK_User_Email_Format",
+            "position('@' IN email) > 1"
+        );
+
     }
 }

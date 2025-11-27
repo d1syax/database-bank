@@ -3,25 +3,25 @@
 namespace MyBank.Api.DTOs;
 
 public record CreateUserRequest(
-    [property: Required] 
-    [property: StringLength(50)] 
+    [Required] 
+    [StringLength(50)] 
     string FirstName,
     
-    [property: Required] 
-    [property: StringLength(50)] 
+    [Required] 
+    [StringLength(50)] 
     string LastName,
     
-    [property: Required] 
-    [property: EmailAddress] 
+    [Required] 
+    [EmailAddress] 
     string Email,
     
-    [property: Required] 
-    [property: Phone]
+    [Required] 
+    [Phone]
     string Phone,
     
-    [property: Required] 
+    [Required] 
     string Password,
     
-    [property: Required] 
+    [Required] 
     DateTime DateOfBirth
 );

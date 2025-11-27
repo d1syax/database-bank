@@ -1,5 +1,5 @@
 ﻿using CSharpFunctionalExtensions;
-using DefaultNamespace;
+using MyBank.Domain.Common;
 
 namespace MyBank.Domain.Entities;
 
@@ -31,7 +31,7 @@ public class UserEntity : SoftDeletableEntity
     {
         get
         {
-            var today = DateTime.Now;
+            var today = DateTime.UtcNow;
             var age = today.Year - DateOfBirth.Year;
             if (DateOfBirth.Date > today.AddYears(-age)) age--;
             return age;
@@ -40,12 +40,14 @@ public class UserEntity : SoftDeletableEntity
 
     public static Result<UserEntity> Create(string firstName, string lastName, string email, string passwordHash, DateTime dateOfBirth, string phoneNumber)
     {
-        if (string.IsNullOrWhiteSpace(email)) return Result.Failure<UserEntity>("Email cannot be empty");
-        if (string.IsNullOrWhiteSpace(firstName)) return Result.Failure<UserEntity>("Name is required");
-        if (dateOfBirth > DateTime.Now.AddYears(-14)) return Result.Failure<UserEntity>("UserEntity is too young");
+        if (string.IsNullOrWhiteSpace(email)) 
+            return Result.Failure<UserEntity>("Email cannot be empty");
+        if (string.IsNullOrWhiteSpace(firstName)) 
+            return Result.Failure<UserEntity>("Name is required");
+        if (dateOfBirth > DateTime.UtcNow.AddYears(-14))
+            return Result.Failure<UserEntity>("UserEntity is too young");
 
         var user = new UserEntity(firstName, lastName, email, passwordHash, dateOfBirth, phoneNumber);
-
         return Result.Success(user);
     }
     

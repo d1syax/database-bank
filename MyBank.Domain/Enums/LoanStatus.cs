@@ -1,10 +1,6 @@
-namespace DefaultNamespace;
-
+namespace MyBank.Domain.Enums;
 public enum LoanStatus
 {
-    Pending = 1,
-    Active = 2,
-    Paid = 3,
-    Defaulted = 4,
-    Cancelled = 5
+    Active = 1,
+    Paid = 2
 }

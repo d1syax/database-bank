@@ -27,7 +27,10 @@ public class TransactionRepository : ITransactionRepository
 
     public async Task<List<TransactionEntity>> GetByUserIdAsync(Guid userId, CancellationToken cancellationToken = default)
     {
-        return await _context.Transactions.Where(x => x.FromAccount.UserId == userId || x.ToAccount.UserId == userId)
+        return await _context.Transactions
+            .Include(x => x.FromAccount)
+            .Include(x => x.ToAccount)
+            .Where(x => x.FromAccount.UserId == userId || x.ToAccount.UserId == userId)
             .OrderByDescending(x => x.CreatedAt).ToListAsync(cancellationToken);
     }
 

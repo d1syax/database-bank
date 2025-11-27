@@ -1,6 +1,6 @@
-﻿using System.Transactions;
-using CSharpFunctionalExtensions;
-using DefaultNamespace;
+﻿using CSharpFunctionalExtensions;
+using MyBank.Domain.Common;
+using MyBank.Domain.Enums; 
 
 namespace MyBank.Domain.Entities;
 
@@ -27,8 +27,7 @@ public class AccountEntity : SoftDeletableEntity
     public DateTime OpenedAt { get; private set; }
     public DateTime? ClosedAt { get; private set; }
 
-    public byte[] RowVersion { get; set; } 
-
+    public uint RowVersion { get; set; }
     public UserEntity UserEntity { get; set; } = null!;
     
     public ICollection<TransactionEntity> OutgoingTransactions { get; set; } = new List<TransactionEntity>();

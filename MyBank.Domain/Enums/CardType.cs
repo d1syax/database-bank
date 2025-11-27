@@ -1,5 +1,4 @@
-namespace DefaultNamespace;
-
+namespace MyBank.Domain.Enums;  
 public enum CardType
 {
     Debit = 1,

@@ -2,8 +2,8 @@
 using MyBank.Api.DTOs;
 using MyBank.Api.DTOs.Responses;
 using MyBank.Domain.Entities;
+using MyBank.Domain.Enums;
 using MyBank.Domain.Interfaces;
-using DefaultNamespace;
 
 namespace MyBank.Application.Services;
 
@@ -52,7 +52,6 @@ public class UserService
 
             var user = userResult.Value;
             await _userRepository.AddAsync(user, ct);
-            await _unitOfWork.SaveChangesAsync(ct); 
 
             var accountResult = AccountEntity.Create(user.Id, "UAH", AccountType.Debit);
             if (accountResult.IsFailure) 
@@ -60,7 +59,6 @@ public class UserService
 
             var account = accountResult.Value;
             await _accountRepository.AddAsync(account, ct);
-            await _unitOfWork.SaveChangesAsync(ct);
 
             var cardResult = CardEntity.Create(account.Id, CardType.Debit);
             if (cardResult.IsFailure)
@@ -68,7 +66,7 @@ public class UserService
 
             var card = cardResult.Value;
             await _cardRepository.AddAsync(card, ct);
-
+            
             await _unitOfWork.SaveChangesAsync(ct);
             await transaction.CommitAsync(ct);
 

@@ -3,17 +3,17 @@
 namespace MyBank.Api.DTOs;
 
 public record CreateLoanRequest(
-    [property: Required] 
+    [Required] 
     Guid UserId,
 
-    [property: Required] 
+    [Required] 
     Guid AccountId, 
 
-    [property: Required] 
-    [property: Range(100, 10000000)] 
+    [Required] 
+    [Range(100, 10000000)] 
     decimal Amount,
 
-    [property: Required] 
-    [property: Range(0.1, 100)] 
+    [Required] 
+    [Range(0.1, 100)] 
     decimal InterestRate 
 );

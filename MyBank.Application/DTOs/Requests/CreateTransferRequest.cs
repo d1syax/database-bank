@@ -3,16 +3,16 @@
 namespace MyBank.Api.DTOs;
 
 public record CreateTransferRequest(
-    [property: Required] 
+    [Required] 
     Guid FromAccountId,
     
-    [property: Required] 
+    [Required] 
     Guid ToAccountId,
     
-    [property: Required] 
-    [property: Range(0.01, 1000000)] 
+    [Required] 
+    [Range(0.01, 1000000)] 
     decimal Amount,
     
-    [property: StringLength(100)] 
+    [StringLength(100)] 
     string Description = "Transfer" 
 );

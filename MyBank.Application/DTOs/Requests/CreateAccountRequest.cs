@@ -1,16 +1,16 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using DefaultNamespace;
+using MyBank.Domain.Enums;
 
 namespace MyBank.Api.DTOs;
 
 public record CreateAccountRequest(
-    [property: Required] 
+    [Required] 
     Guid UserId,
     
-    [property: Required] 
-    [property: StringLength(3, MinimumLength = 3)] 
+    [Required] 
+    [StringLength(3, MinimumLength = 3)] 
     string Currency,
     
-    [property: Required] 
+    [Required] 
     AccountType AccountType
 );

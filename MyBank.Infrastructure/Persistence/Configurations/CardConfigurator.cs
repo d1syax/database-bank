@@ -11,17 +11,22 @@ public class CardConfigurator : IEntityTypeConfiguration<CardEntity>
         builder.HasKey(x => x.Id);
 
         builder.Property(x => x.CardNumber).HasMaxLength(16).IsRequired();
-        builder.Property(x => x.CVV).HasMaxLength(3).IsRequired();
         builder.Property(x => x.DailyLimit).HasPrecision(18, 2);
         
         builder.Property(x => x.CardType).HasConversion<string>().IsRequired();
         builder.Property(x => x.Status).HasConversion<string>().IsRequired();
 
         builder.HasIndex(x => x.CardNumber).IsUnique();
+        
+        builder.HasIndex(x => x.AccountId);
 
         builder.Ignore(x => x.IsActive);
         builder.Ignore(x => x.IsExpired);
         builder.Ignore(x => x.MaskedCardNumber);
+        
+        builder.ToTable(t => t.HasCheckConstraint(
+            "CK_Card_DailyLimit_Positive", 
+            "[DailyLimit] > 0"));
 
         builder.HasOne(x => x.AccountEntity)
             .WithMany(x => x.Cards)

@@ -1,8 +1,7 @@
-namespace DefaultNamespace;
+namespace MyBank.Domain.Enums;
 
 public enum AccountStatus
 {
     Active = 1,
-    Frozen = 2,
-    Closed = 3
+    Closed = 2
 }

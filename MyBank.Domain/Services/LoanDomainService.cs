@@ -1,7 +1,6 @@
-﻿using System.Transactions;
-using CSharpFunctionalExtensions;
-using DefaultNamespace;
+﻿using CSharpFunctionalExtensions;
 using MyBank.Domain.Entities;
+using MyBank.Domain.Enums;
 
 namespace MyBank.Domain.Services;
 
@@ -10,10 +9,10 @@ public class LoanDomainService
     public Result<(LoanEntity Loan, TransactionEntity Transaction)> IssueLoan(UserEntity user, AccountEntity targetAccount, decimal amount, decimal interestRate)
     {
         if (targetAccount.UserId != user.Id)
-            return Result.Failure<(LoanEntity, TransactionEntity)>("The target account does not belong to the user.");
+            return Result.Failure<(LoanEntity, TransactionEntity)>("The target account does not belong to the user");
             
         if (!targetAccount.IsActive)
-            return Result.Failure<(LoanEntity, TransactionEntity)>("Account is blocked or inactive, cannot issue a loan.");
+            return Result.Failure<(LoanEntity, TransactionEntity)>("Account is blocked or inactive, cannot issue a loan");
 
         var loanResult = LoanEntity.Create(user.Id, targetAccount.Id, amount, interestRate);
         if (loanResult.IsFailure)
@@ -24,7 +23,7 @@ public class LoanDomainService
         var depositResult = targetAccount.Deposit(amount);
         if (depositResult.IsFailure)
         {
-            return Result.Failure<(LoanEntity, TransactionEntity)>($"Failed to deposit loan funds: {depositResult.Error}");
+            return Result.Failure<(LoanEntity, TransactionEntity)>($"{depositResult.Error}");
         }
 
         var transactionResult = TransactionEntity.Create(

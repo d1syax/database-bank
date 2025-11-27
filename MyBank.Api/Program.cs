@@ -1,7 +1,9 @@
 ﻿using MyBank.Domain.Interfaces;
 using MyBank.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
+using MyBank.Api.Middleware;
 using MyBank.Application.Services;
+using MyBank.Domain.Services;
 using MyBank.Infrastructure.Persistence.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,19 +18,21 @@ builder.Services.AddScoped<ICardRepository, CardRepository>();
 builder.Services.AddScoped<ILoanRepository, LoanRepository>();
 builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
 
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<AccountService>();
 builder.Services.AddScoped<CardService>();
 builder.Services.AddScoped<LoanService>();
 builder.Services.AddScoped<TransactionService>();
 
+builder.Services.AddScoped<LoanDomainService>();
+builder.Services.AddScoped<TransferDomainService>();
+
 builder.Services.AddControllers();
 
 var app = builder.Build();
 
 app.MapControllers();
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.Run();
 

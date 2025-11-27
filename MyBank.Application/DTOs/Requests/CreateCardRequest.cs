@@ -1,10 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using DefaultNamespace;
+using MyBank.Domain.Enums;
 
 public record CreateCardRequest(
-    [property: Required] 
+    [Required] 
     Guid AccountId,
 
-    [property: Required] 
+    [Required] 
     CardType CardType
 );
