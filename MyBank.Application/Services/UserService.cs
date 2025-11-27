@@ -38,6 +38,8 @@ public class UserService
     {
         if (await _userRepository.IsEmailExists(request.Email, ct))
             return Result.Failure<UserResponse>("Email already exists");
+        
+        var passwordHash = PasswordHasher.HashPassword(request.Password);
 
         using var transaction = await _unitOfWork.BeginTransactionAsync();
 
@@ -45,7 +47,7 @@ public class UserService
         {
             var userResult = UserEntity.Create(
                 request.FirstName, request.LastName, request.Email,
-                request.Password, request.DateOfBirth, request.Phone);
+                passwordHash, request.DateOfBirth, request.Phone);
 
             if (userResult.IsFailure) 
                 return Result.Failure<UserResponse>(userResult.Error);
@@ -76,6 +78,7 @@ public class UserService
         }
         catch (Exception ex)
         {
+            await transaction.RollbackAsync(ct);
             return Result.Failure<UserResponse>($"{ex.Message}");
         }
     }
