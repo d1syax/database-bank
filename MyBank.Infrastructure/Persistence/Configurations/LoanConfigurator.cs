@@ -25,9 +25,9 @@ public class LoanConfigurator : IEntityTypeConfiguration<LoanEntity>
         
         builder.ToTable(t => 
         {
-            t.HasCheckConstraint("CK_Loan_PrincipalAmount_Positive", "[PrincipalAmount] > 0");
-            t.HasCheckConstraint("CK_Loan_InterestAmount_NonNegative", "[InterestAmount] >= 0");
-            t.HasCheckConstraint("CK_Loan_PaidAmount_NonNegative", "[PaidAmount] >= 0");
+            t.HasCheckConstraint("CK_Loan_PrincipalAmount_Positive", "\"PrincipalAmount\" > 0");
+            t.HasCheckConstraint("CK_Loan_InterestAmount_NonNegative", "\"InterestAmount\" >= 0");
+            t.HasCheckConstraint("CK_Loan_PaidAmount_NonNegative", "\"PaidAmount\" >= 0");
         });
 
         builder.HasOne(x => x.UserEntity)

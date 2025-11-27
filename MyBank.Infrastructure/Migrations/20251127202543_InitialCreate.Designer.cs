@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MyBank.Infrastructure.Migrations
 {
     [DbContext(typeof(BankDbContext))]
-    [Migration("20251126192457_InitialCreate")]
+    [Migration("20251127202543_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -45,10 +45,10 @@ namespace MyBank.Infrastructure.Migrations
                         .HasColumnType("numeric(18,2)");
 
                     b.Property<DateTime?>("ClosedAt")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Currency")
                         .IsRequired()
@@ -56,13 +56,13 @@ namespace MyBank.Infrastructure.Migrations
                         .HasColumnType("character varying(3)");
 
                     b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
                     b.Property<DateTime>("OpenedAt")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<uint>("RowVersion")
                         .IsConcurrencyToken()
@@ -75,7 +75,7 @@ namespace MyBank.Infrastructure.Migrations
                         .HasColumnType("text");
 
                     b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
@@ -87,7 +87,14 @@ namespace MyBank.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Accounts");
+                    b.HasIndex("Currency", "Balance");
+
+                    b.HasIndex("UserId", "AccountType", "Status");
+
+                    b.ToTable("Accounts", t =>
+                        {
+                            t.HasCheckConstraint("CK_Account_Balance_NonNegative", "\"Balance\" >= 0");
+                        });
                 });
 
             modelBuilder.Entity("MyBank.Domain.Entities.CardEntity", b =>
@@ -100,12 +107,7 @@ namespace MyBank.Infrastructure.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<DateTime?>("BlockedAt")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<string>("CVV")
-                        .IsRequired()
-                        .HasMaxLength(3)
-                        .HasColumnType("character varying(3)");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("CardNumber")
                         .IsRequired()
@@ -117,17 +119,17 @@ namespace MyBank.Infrastructure.Migrations
                         .HasColumnType("text");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<decimal>("DailyLimit")
                         .HasPrecision(18, 2)
                         .HasColumnType("numeric(18,2)");
 
                     b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime>("ExpirationDate")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
@@ -137,7 +139,7 @@ namespace MyBank.Infrastructure.Migrations
                         .HasColumnType("text");
 
                     b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
@@ -146,7 +148,10 @@ namespace MyBank.Infrastructure.Migrations
                     b.HasIndex("CardNumber")
                         .IsUnique();
 
-                    b.ToTable("Cards");
+                    b.ToTable("Cards", t =>
+                        {
+                            t.HasCheckConstraint("CK_Card_DailyLimit_Positive", "\"DailyLimit\" > 0");
+                        });
                 });
 
             modelBuilder.Entity("MyBank.Domain.Entities.LoanEntity", b =>
@@ -159,10 +164,10 @@ namespace MyBank.Infrastructure.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<decimal>("InterestAmount")
                         .HasPrecision(18, 2)
@@ -172,7 +177,7 @@ namespace MyBank.Infrastructure.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<DateTime>("IssuedAt")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<decimal>("PaidAmount")
                         .HasPrecision(18, 2)
@@ -187,7 +192,7 @@ namespace MyBank.Infrastructure.Migrations
                         .HasColumnType("text");
 
                     b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
@@ -196,38 +201,16 @@ namespace MyBank.Infrastructure.Migrations
 
                     b.HasIndex("AccountId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserId", "Status");
 
-                    b.ToTable("Loans");
-                });
+                    b.ToTable("Loans", t =>
+                        {
+                            t.HasCheckConstraint("CK_Loan_InterestAmount_NonNegative", "\"InterestAmount\" >= 0");
 
-            modelBuilder.Entity("MyBank.Domain.Entities.LoanPaymentEntity", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                            t.HasCheckConstraint("CK_Loan_PaidAmount_NonNegative", "\"PaidAmount\" >= 0");
 
-                    b.Property<decimal>("Amount")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("numeric(18,2)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<Guid>("LoanId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("PaidAt")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("LoanId");
-
-                    b.ToTable("LoanPayments");
+                            t.HasCheckConstraint("CK_Loan_PrincipalAmount_Positive", "\"PrincipalAmount\" > 0");
+                        });
                 });
 
             modelBuilder.Entity("MyBank.Domain.Entities.TransactionEntity", b =>
@@ -241,10 +224,10 @@ namespace MyBank.Infrastructure.Migrations
                         .HasColumnType("numeric(18,2)");
 
                     b.Property<DateTime?>("CompletedAt")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -266,7 +249,7 @@ namespace MyBank.Infrastructure.Migrations
                         .HasColumnType("text");
 
                     b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
@@ -276,7 +259,14 @@ namespace MyBank.Infrastructure.Migrations
 
                     b.HasIndex("ToAccountId");
 
-                    b.ToTable("Transactions");
+                    b.HasIndex("CreatedAt", "TransactionType");
+
+                    b.HasIndex("FromAccountId", "Status");
+
+                    b.ToTable("Transactions", t =>
+                        {
+                            t.HasCheckConstraint("CK_Transaction_Amount_Positive", "\"Amount\" > 0");
+                        });
                 });
 
             modelBuilder.Entity("MyBank.Domain.Entities.UserEntity", b =>
@@ -286,13 +276,13 @@ namespace MyBank.Infrastructure.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime>("DateOfBirth")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -322,14 +312,19 @@ namespace MyBank.Infrastructure.Migrations
                         .HasColumnType("character varying(50)");
 
                     b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
                     b.HasIndex("Email")
                         .IsUnique();
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", t =>
+                        {
+                            t.HasCheckConstraint("CK_User_Email_Format", "position('@' IN \"Email\") > 1");
+
+                            t.HasCheckConstraint("CK_User_MinAge", "\"DateOfBirth\" <= (CURRENT_DATE - INTERVAL '14 years')");
+                        });
                 });
 
             modelBuilder.Entity("MyBank.Domain.Entities.AccountEntity", b =>
@@ -373,17 +368,6 @@ namespace MyBank.Infrastructure.Migrations
                     b.Navigation("UserEntity");
                 });
 
-            modelBuilder.Entity("MyBank.Domain.Entities.LoanPaymentEntity", b =>
-                {
-                    b.HasOne("MyBank.Domain.Entities.LoanEntity", "LoanEntity")
-                        .WithMany("Payments")
-                        .HasForeignKey("LoanId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("LoanEntity");
-                });
-
             modelBuilder.Entity("MyBank.Domain.Entities.TransactionEntity", b =>
                 {
                     b.HasOne("MyBank.Domain.Entities.AccountEntity", "FromAccount")
@@ -410,11 +394,6 @@ namespace MyBank.Infrastructure.Migrations
                     b.Navigation("Loans");
 
                     b.Navigation("OutgoingTransactions");
-                });
-
-            modelBuilder.Entity("MyBank.Domain.Entities.LoanEntity", b =>
-                {
-                    b.Navigation("Payments");
                 });
 
             modelBuilder.Entity("MyBank.Domain.Entities.UserEntity", b =>

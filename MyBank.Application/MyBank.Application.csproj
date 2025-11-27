@@ -8,10 +8,12 @@
 
     <ItemGroup>
       <ProjectReference Include="..\MyBank.Domain\MyBank.Domain.csproj" />
+      <ProjectReference Include="..\MyBank.Infrastructure\MyBank.Infrastructure.csproj" />
     </ItemGroup>
 
     <ItemGroup>
       <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
+      <PackageReference Include="Npgsql" Version="9.0.3" />
     </ItemGroup>
 
 </Project>

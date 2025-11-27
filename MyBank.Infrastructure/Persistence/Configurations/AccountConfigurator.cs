@@ -30,7 +30,7 @@ public class AccountConfigurator : IEntityTypeConfiguration<AccountEntity>
         
         builder.ToTable(t => t.HasCheckConstraint(
             "CK_Account_Balance_NonNegative", 
-            "[Balance] >= 0"));
+            "\"Balance\" >= 0"));
 
         builder.HasOne(x => x.UserEntity)
             .WithMany(x => x.Accounts)

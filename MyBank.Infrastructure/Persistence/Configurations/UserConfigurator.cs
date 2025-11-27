@@ -20,15 +20,8 @@ public class UserConfigurator : IEntityTypeConfiguration<UserEntity>
         builder.Ignore(x => x.FullName);
         builder.Ignore(x => x.Age);
         
-        builder.HasCheckConstraint(
-            "CK_User_MinAge",
-            "[DateOfBirth] <= (CURRENT_DATE - INTERVAL '14 years')"
-        );
+        builder.ToTable(t => t.HasCheckConstraint("CK_User_Email_Format", "position('@' IN \"Email\") > 1"));
 
-        builder.HasCheckConstraint(
-            "CK_User_Email_Format",
-            "position('@' IN email) > 1"
-        );
-
+        builder.ToTable(t => t.HasCheckConstraint("CK_User_MinAge", "\"DateOfBirth\" <= (CURRENT_DATE - INTERVAL '14 years')"));
     }
 }

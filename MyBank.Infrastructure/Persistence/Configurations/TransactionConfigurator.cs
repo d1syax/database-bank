@@ -27,7 +27,9 @@ public class TransactionConfigurator : IEntityTypeConfiguration<TransactionEntit
         builder.HasIndex(x => x.FromAccountId); 
         builder.HasIndex(x => x.ToAccountId);   
         
-        builder.HasCheckConstraint("CK_Transaction_Amount_Positive", "[Amount] > 0");
+        builder.ToTable(t => t.HasCheckConstraint(
+            "CK_Transaction_Amount_Positive", 
+            "\"Amount\" > 0"));
 
         builder.HasOne(x => x.FromAccount)
             .WithMany(x => x.OutgoingTransactions)

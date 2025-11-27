@@ -27,7 +27,11 @@ builder.Services.AddScoped<TransactionService>();
 builder.Services.AddScoped<LoanDomainService>();
 builder.Services.AddScoped<TransferDomainService>();
 
+builder.Services.AddScoped<ReportService>();
+
 builder.Services.AddControllers();
+
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
 var app = builder.Build();
 

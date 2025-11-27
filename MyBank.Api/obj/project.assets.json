@@ -949,7 +949,9 @@
         "framework": ".NETCoreApp,Version=v9.0",
         "dependencies": {
           "BCrypt.Net-Next": "4.0.3",
-          "MyBank.Domain": "1.0.0"
+          "MyBank.Domain": "1.0.0",
+          "MyBank.Infrastructure": "1.0.0",
+          "Npgsql": "9.0.3"
         },
         "compile": {
           "bin/placeholder/MyBank.Application.dll": {}

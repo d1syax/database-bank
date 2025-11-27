@@ -20,6 +20,14 @@
           "MyBank.Api.dll": {}
         }
       },
+      "BCrypt.Net-Next/4.0.3": {
+        "runtime": {
+          "lib/net6.0/BCrypt.Net-Next.dll": {
+            "assemblyVersion": "4.0.3.0",
+            "fileVersion": "4.0.3.0"
+          }
+        }
+      },
       "CSharpFunctionalExtensions/3.6.0": {
         "runtime": {
           "lib/net8.0/CSharpFunctionalExtensions.dll": {
@@ -627,7 +635,10 @@
       "System.Threading.Channels/7.0.0": {},
       "MyBank.Application/1.0.0": {
         "dependencies": {
-          "MyBank.Domain": "1.0.0"
+          "BCrypt.Net-Next": "4.0.3",
+          "MyBank.Domain": "1.0.0",
+          "MyBank.Infrastructure": "1.0.0",
+          "Npgsql": "9.0.3"
         },
         "runtime": {
           "MyBank.Application.dll": {
@@ -668,6 +679,13 @@
       "type": "project",
       "serviceable": false,
       "sha512": ""
+    },
+    "BCrypt.Net-Next/4.0.3": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-W+U9WvmZQgi5cX6FS5GDtDoPzUCV4LkBLkywq/kRZhuDwcbavOzcDAr3LXJFqHUi952Yj3LEYoWW0jbEUQChsA==",
+      "path": "bcrypt.net-next/4.0.3",
+      "hashPath": "bcrypt.net-next.4.0.3.nupkg.sha512"
     },
     "CSharpFunctionalExtensions/3.6.0": {
       "type": "package",

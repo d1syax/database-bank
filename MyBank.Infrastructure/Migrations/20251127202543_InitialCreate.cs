@@ -21,15 +21,17 @@ namespace MyBank.Infrastructure.Migrations
                     FirstName = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     LastName = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     PhoneNumber = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
-                    DateOfBirth = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    DateOfBirth = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
-                    DeletedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: true)
+                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Users", x => x.Id);
+                    table.CheckConstraint("CK_User_Email_Format", "position('@' IN \"Email\") > 1");
+                    table.CheckConstraint("CK_User_MinAge", "\"DateOfBirth\" <= (CURRENT_DATE - INTERVAL '14 years')");
                 });
 
             migrationBuilder.CreateTable(
@@ -43,17 +45,18 @@ namespace MyBank.Infrastructure.Migrations
                     Balance = table.Column<decimal>(type: "numeric(18,2)", precision: 18, scale: 2, nullable: false),
                     Currency = table.Column<string>(type: "character varying(3)", maxLength: 3, nullable: false),
                     Status = table.Column<string>(type: "text", nullable: false),
-                    OpenedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    ClosedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    OpenedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    ClosedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     xmin = table.Column<uint>(type: "xid", rowVersion: true, nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
-                    DeletedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: true)
+                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Accounts", x => x.Id);
+                    table.CheckConstraint("CK_Account_Balance_NonNegative", "\"Balance\" >= 0");
                     table.ForeignKey(
                         name: "FK_Accounts_Users_UserId",
                         column: x => x.UserId,
@@ -70,19 +73,19 @@ namespace MyBank.Infrastructure.Migrations
                     AccountId = table.Column<Guid>(type: "uuid", nullable: false),
                     CardNumber = table.Column<string>(type: "character varying(16)", maxLength: 16, nullable: false),
                     CardType = table.Column<string>(type: "text", nullable: false),
-                    ExpirationDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    CVV = table.Column<string>(type: "character varying(3)", maxLength: 3, nullable: false),
+                    ExpirationDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     Status = table.Column<string>(type: "text", nullable: false),
                     DailyLimit = table.Column<decimal>(type: "numeric(18,2)", precision: 18, scale: 2, nullable: false),
-                    BlockedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    BlockedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
-                    DeletedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: true)
+                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Cards", x => x.Id);
+                    table.CheckConstraint("CK_Card_DailyLimit_Positive", "\"DailyLimit\" > 0");
                     table.ForeignKey(
                         name: "FK_Cards_Accounts_AccountId",
                         column: x => x.AccountId,
@@ -102,15 +105,18 @@ namespace MyBank.Infrastructure.Migrations
                     InterestAmount = table.Column<decimal>(type: "numeric(18,2)", precision: 18, scale: 2, nullable: false),
                     PaidAmount = table.Column<decimal>(type: "numeric(18,2)", precision: 18, scale: 2, nullable: false),
                     Status = table.Column<string>(type: "text", nullable: false),
-                    IssuedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    IssuedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
-                    DeletedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: true)
+                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Loans", x => x.Id);
+                    table.CheckConstraint("CK_Loan_InterestAmount_NonNegative", "\"InterestAmount\" >= 0");
+                    table.CheckConstraint("CK_Loan_PaidAmount_NonNegative", "\"PaidAmount\" >= 0");
+                    table.CheckConstraint("CK_Loan_PrincipalAmount_Positive", "\"PrincipalAmount\" > 0");
                     table.ForeignKey(
                         name: "FK_Loans_Accounts_AccountId",
                         column: x => x.AccountId,
@@ -136,13 +142,14 @@ namespace MyBank.Infrastructure.Migrations
                     TransactionType = table.Column<string>(type: "text", nullable: false),
                     Status = table.Column<string>(type: "text", nullable: false),
                     Description = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
-                    CompletedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: true)
+                    CompletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Transactions", x => x.Id);
+                    table.CheckConstraint("CK_Transaction_Amount_Positive", "\"Amount\" > 0");
                     table.ForeignKey(
                         name: "FK_Transactions_Accounts_FromAccountId",
                         column: x => x.FromAccountId,
@@ -157,28 +164,6 @@ namespace MyBank.Infrastructure.Migrations
                         onDelete: ReferentialAction.Restrict);
                 });
 
-            migrationBuilder.CreateTable(
-                name: "LoanPayments",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    LoanId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Amount = table.Column<decimal>(type: "numeric(18,2)", precision: 18, scale: 2, nullable: false),
-                    PaidAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_LoanPayments", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_LoanPayments_Loans_LoanId",
-                        column: x => x.LoanId,
-                        principalTable: "Loans",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
             migrationBuilder.CreateIndex(
                 name: "IX_Accounts_AccountNumber",
                 table: "Accounts",
@@ -186,9 +171,19 @@ namespace MyBank.Infrastructure.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_Accounts_Currency_Balance",
+                table: "Accounts",
+                columns: new[] { "Currency", "Balance" });
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Accounts_UserId",
                 table: "Accounts",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Accounts_UserId_AccountType_Status",
+                table: "Accounts",
+                columns: new[] { "UserId", "AccountType", "Status" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Cards_AccountId",
@@ -202,19 +197,14 @@ namespace MyBank.Infrastructure.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_LoanPayments_LoanId",
-                table: "LoanPayments",
-                column: "LoanId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Loans_AccountId",
                 table: "Loans",
                 column: "AccountId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Loans_UserId",
+                name: "IX_Loans_UserId_Status",
                 table: "Loans",
-                column: "UserId");
+                columns: new[] { "UserId", "Status" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Transactions_CreatedAt",
@@ -222,9 +212,19 @@ namespace MyBank.Infrastructure.Migrations
                 column: "CreatedAt");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Transactions_CreatedAt_TransactionType",
+                table: "Transactions",
+                columns: new[] { "CreatedAt", "TransactionType" });
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Transactions_FromAccountId",
                 table: "Transactions",
                 column: "FromAccountId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Transactions_FromAccountId_Status",
+                table: "Transactions",
+                columns: new[] { "FromAccountId", "Status" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Transactions_ToAccountId",
@@ -245,13 +245,10 @@ namespace MyBank.Infrastructure.Migrations
                 name: "Cards");
 
             migrationBuilder.DropTable(
-                name: "LoanPayments");
+                name: "Loans");
 
             migrationBuilder.DropTable(
                 name: "Transactions");
-
-            migrationBuilder.DropTable(
-                name: "Loans");
 
             migrationBuilder.DropTable(
                 name: "Accounts");

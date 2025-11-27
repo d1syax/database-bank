@@ -26,7 +26,7 @@ public class CardConfigurator : IEntityTypeConfiguration<CardEntity>
         
         builder.ToTable(t => t.HasCheckConstraint(
             "CK_Card_DailyLimit_Positive", 
-            "[DailyLimit] > 0"));
+            "\"DailyLimit\" > 0"));
 
         builder.HasOne(x => x.AccountEntity)
             .WithMany(x => x.Cards)
