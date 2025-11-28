@@ -3,5 +3,3 @@ bin/
 obj/
 **/bin/
 **/obj/
-Debug/
-bin/
