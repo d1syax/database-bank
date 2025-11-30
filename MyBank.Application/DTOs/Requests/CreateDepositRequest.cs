@@ -2,8 +2,14 @@
 
 namespace MyBank.Api.DTOs;
 
-public record DepositRequest(
-    [Required] 
-    [Range(0.01, 10000000)] 
-    decimal Amount
-);
+public record OpenDepositRequest(
+    [Required]
+    Guid UserId,
+    [Required]
+    Guid FromAccountId,
+    [Required]
+    [Range(0, 1000000)]
+    decimal Amount,
+    [Required]
+    string Currency
+    );
