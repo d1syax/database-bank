@@ -2,11 +2,11 @@
 
 namespace MyBank.Api.DTOs;
 
-public record OpenDepositRequest(
+public record CreateDepositRequest(
     [Required]
     Guid UserId,
     [Required]
-    Guid FromAccountId,
+    Guid AccountId,
     [Required]
     [Range(0, 1000000)]
     decimal Amount,

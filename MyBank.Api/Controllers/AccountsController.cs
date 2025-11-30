@@ -33,6 +33,19 @@ public class AccountsController : ControllerBase
         return Ok(result.Value);
     }
 
+    [HttpPost("deposit")]
+    public async Task<IActionResult> OpenDepositAccount(CreateDepositRequest request, CancellationToken ct)
+    {
+        var result = await _accountService.OpenDepositAccountAsync(request, ct);
+
+        if (result.IsFailure)
+        {
+            return BadRequest(result.Error);
+        }
+        
+        return Ok(result.Value);
+    }
+    
     [HttpDelete("{id}")]
     public async Task<IActionResult> Close(Guid id, CancellationToken ct)
     {

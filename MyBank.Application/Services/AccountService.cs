@@ -4,6 +4,7 @@ using MyBank.Api.DTOs;
 using MyBank.Api.DTOs.Responses;
 using MyBank.Domain.Entities;
 using MyBank.Domain.Interfaces;
+using MyBank.Domain.Enums;
 
 namespace MyBank.Application.Services;
 
@@ -12,12 +13,14 @@ public class AccountService
     private readonly IAccountRepository _accountRepository;
     private readonly IUserRepository _userRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ITransactionRepository _transactionRepository;
 
-    public AccountService(IAccountRepository accountRepository, IUserRepository userRepository, IUnitOfWork unitOfWork)
+    public AccountService(IAccountRepository accountRepository, IUserRepository userRepository, IUnitOfWork unitOfWork, ITransactionRepository transactionRepository)
     {
         _accountRepository = accountRepository;
         _userRepository = userRepository;
         _unitOfWork = unitOfWork;
+        _transactionRepository = transactionRepository;
     }
     
     public async Task<List<AccountResponse>> GetUserAccountsAsync(Guid userId, CancellationToken ct)
@@ -132,5 +135,82 @@ public class AccountService
             .ToList();
 
         return filtered;
+    }
+
+    public async Task<Result<Guid>> OpenDepositAccountAsync(CreateDepositRequest request, CancellationToken ct)
+    {
+        if (request.Amount <= 0)
+        {
+            return Result.Failure<Guid>("Deposit amount can't be less then 0");
+        }
+
+        var fromAccount = await _accountRepository.GetByIdAsync(request.AccountId, ct);
+        if (fromAccount == null)
+        {
+            return Result.Failure<Guid>("Account not found");
+        }
+
+        if (fromAccount.Balance < request.Amount)
+        {
+            return Result.Failure<Guid>("Not enough money to open deposit");
+        }
+
+        using var transaction = await _unitOfWork.BeginTransactionAsync();
+
+        try
+        {
+            var newAccountResult = AccountEntity.Create(
+                request.UserId, 
+                request.Currency, 
+                AccountType.Savings
+                );
+            
+            if (newAccountResult.IsFailure)
+            {
+                return Result.Failure<Guid>(newAccountResult.Error);
+            }
+            
+            var newAccount = newAccountResult.Value;
+
+            var withdrawResult = fromAccount.Withdraw(request.Amount);
+            if (withdrawResult.IsFailure)
+            {
+                return Result.Failure<Guid>(withdrawResult.Error);
+            }
+            
+            var depositResult = newAccount.Deposit(request.Amount);
+            if (depositResult.IsFailure)
+            {
+                return Result.Failure<Guid>(depositResult.Error);
+            }
+
+            var txResult = TransactionEntity.Create(
+                fromAccount.Id,
+                newAccount.Id,
+                request.Amount,
+                TransactionType.Transfer,
+                "Deposit transfer"
+            );
+
+            if (txResult.IsFailure)
+            {
+                return Result.Failure<Guid>(txResult.Error);
+            }
+            var tx = txResult.Value;
+            tx.Complete();
+
+            await _accountRepository.AddAsync(newAccount, ct);
+            await _accountRepository.UpdateAsync(fromAccount, ct);
+            await _transactionRepository.AddAsync(tx, ct);
+
+            await _unitOfWork.SaveChangesAsync(ct);
+            await transaction.CommitAsync(ct);
+
+            return Result.Success(newAccount.Id);
+        }
+        catch (Exception ex)
+        {
+            return Result.Failure<Guid>($"Transaction failed: {ex.Message}");
+        }
     }
 }
