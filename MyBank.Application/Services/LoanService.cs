@@ -117,4 +117,24 @@ public class LoanService
             return Result.Failure($"{ex.Message}");
         }
     }
+    
+    public async Task<Result> ArchiveLoanAsync(Guid loanId, CancellationToken ct)
+    {
+        var loan = await _loanRepository.GetByIdAsync(loanId, ct);
+        if (loan == null)
+        {
+            return Result.Failure("Loan not found");
+
+        }
+        
+        if (loan.Status != Domain.Enums.LoanStatus.Paid)
+        {
+            return Result.Failure("Cannot delete an active loan.");
+        }
+
+        await _loanRepository.DeleteAsync(loan, ct);
+        await _unitOfWork.SaveChangesAsync(ct);
+
+        return Result.Success();
+    }
 }

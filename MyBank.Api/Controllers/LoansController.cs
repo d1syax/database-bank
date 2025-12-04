@@ -43,4 +43,12 @@ public class LoansController : ControllerBase
 
         return Ok("Payment processed successfully");
     }
+    
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteLoan(Guid id, CancellationToken ct)
+    {
+        var result = await _loanService.ArchiveLoanAsync(id, ct);
+        if (result.IsFailure) return BadRequest(result.Error);
+        return NoContent();
+    }
 }
