@@ -1,9 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using MyBank.Api.DTOs;
+using MyBank.Application.DTOs.Requests;
 using MyBank.Application.Services;
 
 namespace MyBank.Api.Controllers;
-
 
 [ApiController]
 [Route("api/[controller]")]

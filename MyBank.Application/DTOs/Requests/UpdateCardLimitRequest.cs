@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace MyBank.Api.DTOs;
+namespace MyBank.Application.DTOs.Requests;
 
 public record UpdateCardLimitRequest(
     [Required]

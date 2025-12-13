@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using MyBank.Domain.Enums;
 
-namespace MyBank.Api.DTOs;
+namespace MyBank.Application.DTOs.Requests;
 
 public record CreateAccountRequest(
     [Required] 
