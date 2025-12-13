@@ -69,4 +69,21 @@ public class CardService
 
         return Result.Success();
     }
+    
+    public async Task<Result> UpdateCardLimitAsync(Guid cardId, decimal newLimit, CancellationToken ct)
+    {
+        var card = await _cardRepository.GetByIdAsync(cardId, ct);
+        if (card == null) 
+            return Result.Failure("Card not found");
+
+        var result = card.ChangeLimit(newLimit);
+        if (result.IsFailure) 
+            return result;
+
+        await _cardRepository.UpdateAsync(card, ct);
+        await _unitOfWork.SaveChangesAsync(ct);
+
+        return Result.Success();
+    }
+
 }

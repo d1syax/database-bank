@@ -44,4 +44,14 @@ public class CardsController : ControllerBase
         return Ok("Card blocked");
     }
     
+    [HttpPut("{id}/limit")]
+    public async Task<IActionResult> UpdateCardLimit(Guid id, UpdateCardLimitRequest request, CancellationToken ct)
+    {
+        var result = await _cardService.UpdateCardLimitAsync(id, request.NewDailyLimit, ct);
+    
+        if (result.IsFailure)
+            return BadRequest(result.Error);
+
+        return Ok("Card limit updated successfully");
+    }
 }
