@@ -54,4 +54,11 @@ public class CardsController : ControllerBase
 
         return Ok("Card limit updated successfully");
     }
+    
+    [HttpGet("user/{userId}")]
+    public async Task<IActionResult> GetUserCards(Guid userId, CancellationToken ct)
+    {
+        var cards = await _cardService.GetUserCardsAsync(userId, ct);
+        return Ok(cards);
+    }
 }

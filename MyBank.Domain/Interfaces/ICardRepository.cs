@@ -9,4 +9,6 @@ public interface ICardRepository
     Task AddAsync(CardEntity card, CancellationToken ct = default);
     Task UpdateAsync(CardEntity card, CancellationToken ct = default);
     Task DeleteAsync(CardEntity card, CancellationToken ct = default);
+    
+    Task<List<CardEntity>> GetByUserIdAsync(Guid userId, CancellationToken ct = default);
 }

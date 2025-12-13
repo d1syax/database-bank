@@ -85,5 +85,24 @@ public class CardService
 
         return Result.Success();
     }
-
+    
+    public async Task<List<UserCardsResponse>> GetUserCardsAsync(Guid userId, CancellationToken ct)
+    {
+        var cards = await _cardRepository.GetByUserIdAsync(userId, ct);
+    
+        var response = new List<UserCardsResponse>();
+        foreach (var card in cards)
+        {
+            response.Add(new UserCardsResponse(
+                card.Id,
+                card.MaskedCardNumber,
+                card.CardType.ToString(),
+                card.AccountEntity.AccountNumber,
+                card.AccountEntity.Balance,
+                card.Status.ToString(),
+                card.DailyLimit
+            ));
+        }
+        return response;
+    }
 }
