@@ -24,4 +24,15 @@ public class ReportsController : ControllerBase
         
         return Ok(result.Value);
     }
+    
+    [HttpGet("monthly-transactions")]
+    public async Task<IActionResult> GetMonthlyTransactionReport(CancellationToken ct)
+    {
+        var result = await _reportService.GetMonthlyTransactionReportAsync(ct);
+    
+        if (result.IsFailure)
+            return BadRequest(result.Error);
+    
+        return Ok(result.Value);
+    }
 }
