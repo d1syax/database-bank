@@ -31,4 +31,15 @@ public class TransactionsController : ControllerBase
         var history = await _transactionService.GetAccountHistoryAsync(accountId, ct);
         return Ok(history);
     }
+    
+    [HttpPost("history/range")]
+    public async Task<IActionResult> GetHistoryByDateRange(TransactionHistoryRequest request, CancellationToken ct)
+    {
+        var history = await _transactionService.GetAccountHistoryByDateRangeAsync(
+            request.AccountId, 
+            request.StartDate, 
+            request.EndDate, 
+            ct);
+        return Ok(history);
+    }
 }

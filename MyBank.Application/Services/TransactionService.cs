@@ -118,4 +118,30 @@ public class TransactionService
         }
         return response;
     }
+    
+    public async Task<List<TransactionResponse>> GetAccountHistoryByDateRangeAsync(
+        Guid accountId, 
+        DateTime startDate, 
+        DateTime endDate, 
+        CancellationToken ct)
+    {
+        var transactions = await _transactionRepository.GetByAccountIdAndDateRangeAsync(
+            accountId, startDate, endDate, ct);
+    
+        var response = new List<TransactionResponse>();
+        foreach (var t in transactions)
+        {
+            response.Add(new TransactionResponse(
+                t.Id,
+                t.FromAccountId ?? Guid.Empty,
+                t.ToAccountId ?? Guid.Empty,
+                t.Amount,
+                t.TransactionType.ToString(),
+                t.Status.ToString(),
+                t.Description,
+                t.CreatedAt
+            ));
+        }
+        return response;
+    }
 }
