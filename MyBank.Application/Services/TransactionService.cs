@@ -2,8 +2,9 @@
 using Microsoft.EntityFrameworkCore;
 using MyBank.Api.DTOs;
 using MyBank.Api.DTOs.Responses;
+using MyBank.Domain.Entities;
+using MyBank.Domain.Enums;
 using MyBank.Domain.Interfaces;
-using MyBank.Domain.Services; 
 namespace MyBank.Application.Services;
 
 public class TransactionService
@@ -11,7 +12,6 @@ public class TransactionService
     private readonly IAccountRepository _accountRepository;
     private readonly ITransactionRepository _transactionRepository;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly TransferDomainService _transferDomainService;
 
     public TransactionService(
         IAccountRepository accountRepository, 
@@ -21,7 +21,6 @@ public class TransactionService
         _accountRepository = accountRepository;
         _transactionRepository = transactionRepository;
         _unitOfWork = unitOfWork;
-        _transferDomainService = new TransferDomainService();
     }
 
     public async Task<Result<TransactionResponse>> TransferAsync(CreateTransferRequest request, CancellationToken ct)
@@ -35,30 +34,38 @@ public class TransactionService
         using var transaction = await _unitOfWork.BeginTransactionAsync();
         try
         {
-            var fromAccountRowVersion = fromAccount.RowVersion;
-            var toAccountRowVersion = toAccount.RowVersion;
-            
-            var transferResult = _transferDomainService.Transfer(
-                fromAccount, toAccount, request.Amount, request.Description);
+            if (fromAccount.Id == toAccount.Id)
+                return Result.Failure<TransactionResponse>("Cannot transfer to the same account");
 
-            if (transferResult.IsFailure)
-                return Result.Failure<TransactionResponse>(transferResult.Error);
+            var withdrawResult = fromAccount.Withdraw(request.Amount);
+            if (withdrawResult.IsFailure) return Result.Failure<TransactionResponse>(withdrawResult.Error);
 
-            var transactionEntity = transferResult.Value;
+            var depositResult = toAccount.Deposit(request.Amount);
+            if (depositResult.IsFailure) return Result.Failure<TransactionResponse>(depositResult.Error);
+
+            var txResult = TransactionEntity.Create(
+                fromAccount.Id, 
+                toAccount.Id, 
+                request.Amount, 
+                TransactionType.Transfer, 
+                request.Description
+            );
+            if (txResult.IsFailure) return Result.Failure<TransactionResponse>(txResult.Error);
+        
+            var transactionEntity = txResult.Value;
+            transactionEntity.Complete();
 
             await _transactionRepository.AddAsync(transactionEntity, ct);
+            await _accountRepository.UpdateAsync(fromAccount, ct);
+            await _accountRepository.UpdateAsync(toAccount, ct);
+        
             await _unitOfWork.SaveChangesAsync(ct);
             await transaction.CommitAsync(ct);
 
             return Result.Success(new TransactionResponse(
-                transactionEntity.Id,
-                transactionEntity.FromAccountId!.Value,
-                transactionEntity.ToAccountId!.Value,
-                transactionEntity.Amount,
-                transactionEntity.TransactionType.ToString(),
-                transactionEntity.Status.ToString(),
-                transactionEntity.Description,
-                transactionEntity.CreatedAt
+                transactionEntity.Id, transactionEntity.FromAccountId!.Value, transactionEntity.ToAccountId!.Value,
+                transactionEntity.Amount, transactionEntity.TransactionType.ToString(),
+                transactionEntity.Status.ToString(), transactionEntity.Description, transactionEntity.CreatedAt
             ));
         }
         catch (DbUpdateConcurrencyException)
