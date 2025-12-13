@@ -3,7 +3,6 @@ using MyBank.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using MyBank.Api.Middleware;
 using MyBank.Application.Services;
-using MyBank.Domain.Services;
 using MyBank.Infrastructure.Persistence.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -24,19 +23,23 @@ builder.Services.AddScoped<CardService>();
 builder.Services.AddScoped<LoanService>();
 builder.Services.AddScoped<TransactionService>();
 
-builder.Services.AddScoped<LoanDomainService>();
-builder.Services.AddScoped<TransferDomainService>();
-
 builder.Services.AddScoped<ReportService>();
 
 builder.Services.AddControllers();
+
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
 var app = builder.Build();
 
-app.MapControllers();
+    app.UseSwagger();
+    app.UseSwaggerUI();
+
 app.UseMiddleware<ExceptionHandlingMiddleware>();
+
+app.MapControllers();
 
 app.Run();
 

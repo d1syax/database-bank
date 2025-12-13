@@ -11,5 +11,6 @@ public record CreateDepositRequest(
     [Range(0, 1000000)]
     decimal Amount,
     [Required]
+    [RegularExpression("^(UAH|USD|EUR)$", ErrorMessage = "Currency must be UAH, USD, or EUR")]
     string Currency
     );

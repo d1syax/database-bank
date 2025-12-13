@@ -1,6 +1,7 @@
 ﻿using CSharpFunctionalExtensions;
 using MyBank.Api.DTOs;
 using MyBank.Api.DTOs.Responses;
+using MyBank.Domain.Constants;
 using MyBank.Domain.Entities;
 using MyBank.Domain.Enums;
 using MyBank.Domain.Interfaces;
@@ -30,7 +31,7 @@ public class UserService
             return Result.Failure<UserResponse>("User not found");
 
         return Result.Success(new UserResponse(
-            user.Id, user.FirstName, user.LastName, user.Email, user.PhoneNumber, user.CreatedAt
+            user.Id, user.FirstName, user.LastName, user.Email, user.PhoneNumber, user.DateOfBirth.ToString("yyyy-MM-dd"), user.CreatedAt
         ));
     }
 
@@ -51,11 +52,11 @@ public class UserService
 
             if (userResult.IsFailure) 
                 return Result.Failure<UserResponse>(userResult.Error);
-
+    
             var user = userResult.Value;
             await _userRepository.AddAsync(user, ct);
 
-            var accountResult = AccountEntity.Create(user.Id, "UAH", AccountType.Debit);
+            var accountResult = AccountEntity.Create(user.Id, CurrencyConstants.UAH, AccountType.Debit);
             if (accountResult.IsFailure) 
                 return Result.Failure<UserResponse>(accountResult.Error);
 
@@ -73,7 +74,7 @@ public class UserService
             await transaction.CommitAsync(ct);
 
             return Result.Success(new UserResponse(
-                user.Id, user.FirstName, user.LastName, user.Email, user.PhoneNumber, user.CreatedAt
+                user.Id, user.FirstName, user.LastName, user.Email, user.PhoneNumber, user.DateOfBirth.ToString("yyyy-MM-dd"), user.CreatedAt
             ));
         }
         catch (Exception ex)
@@ -97,7 +98,7 @@ public class UserService
         await _unitOfWork.SaveChangesAsync(ct);
 
         return Result.Success(new UserResponse(
-            user.Id, user.FirstName, user.LastName, user.Email, user.PhoneNumber, user.CreatedAt
+            user.Id, user.FirstName, user.LastName, user.Email, user.PhoneNumber, user.DateOfBirth.ToString("yyyy-MM-dd"), user.CreatedAt
         ));
     }
 
@@ -111,25 +112,5 @@ public class UserService
         await _unitOfWork.SaveChangesAsync(ct);
 
         return Result.Success();
-    }
-    
-    public async Task<List<UserResponse>> SearchUsersAsync(string searchTerm, int page = 1, int pageSize = 10, CancellationToken cancellationToken = default)
-    {
-        var users = await _userRepository.GetAllAsync(cancellationToken);
-    
-        var filtered = users
-            .Where(x => x.Email.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) 
-                        || x.FirstName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)
-                        || x.LastName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)
-                        || x.PhoneNumber.Contains(searchTerm))
-            .OrderBy(x => x.LastName)
-            .ThenBy(x => x.FirstName)
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
-            .Select(x => new UserResponse(
-                x.Id, x.FirstName, x.LastName, x.Email, x.PhoneNumber, x.CreatedAt))
-            .ToList();
-
-        return filtered;
     }
 }

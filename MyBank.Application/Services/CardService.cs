@@ -27,7 +27,7 @@ public class CardService
         foreach (var c in cards)
         {
             response.Add(new CardResponse(
-                c.Id, c.MaskedCardNumber, c.CardType.ToString(), 
+                c.Id, c.CardNumber, c.CardType.ToString(), 
                 c.ExpirationDate, c.Status.ToString(), c.DailyLimit
             ));
         }
@@ -49,7 +49,7 @@ public class CardService
         await _unitOfWork.SaveChangesAsync(ct);
 
         return Result.Success(new CardResponse(
-            card.Id, card.MaskedCardNumber, card.CardType.ToString(), 
+            card.Id, card.CardNumber, card.CardType.ToString(), 
             card.ExpirationDate, card.Status.ToString(), card.DailyLimit
         ));
     }

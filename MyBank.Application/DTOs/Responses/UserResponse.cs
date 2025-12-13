@@ -6,5 +6,6 @@ public record UserResponse(
     string LastName,
     string Email,
     string Phone,
+    string DateOfBirth,
     DateTime CreatedAt
 );

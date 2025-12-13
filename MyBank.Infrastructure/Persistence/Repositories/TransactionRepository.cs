@@ -30,7 +30,7 @@ public class TransactionRepository : ITransactionRepository
         return await _context.Transactions
             .Include(x => x.FromAccount)
             .Include(x => x.ToAccount)
-            .Where(x => x.FromAccount.UserId == userId || x.ToAccount.UserId == userId)
+            .Where(x => x.FromAccount!.UserId == userId || x.ToAccount!.UserId == userId)
             .OrderByDescending(x => x.CreatedAt).ToListAsync(cancellationToken);
     }
 

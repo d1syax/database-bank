@@ -122,20 +122,6 @@ public class AccountService
         }
     }
     
-    public async Task<List<AccountResponse>> GetAccountsAboveBalanceAsync(Guid userId, decimal minBalance, CancellationToken cancellationToken = default)
-    {
-        var accounts = await _accountRepository.GetByUserIdAsync(userId, cancellationToken);
-    
-        var filtered = accounts
-            .Where(x => x.Balance >= minBalance && x.Status == Domain.Enums.AccountStatus.Active)
-            .OrderByDescending(x => x.Balance)
-            .Select(x => new AccountResponse(
-                x.Id, x.UserId, x.AccountNumber, x.Balance,
-                x.Currency, x.AccountType.ToString(), x.Status.ToString(), x.OpenedAt))
-            .ToList();
-
-        return filtered;
-    }
 
     public async Task<Result<Guid>> OpenDepositAccountAsync(CreateDepositRequest request, CancellationToken ct)
     {
@@ -154,7 +140,10 @@ public class AccountService
         {
             return Result.Failure<Guid>("Not enough money to open deposit");
         }
-
+        
+        if (fromAccount.Currency != request.Currency.ToUpper())
+            return Result.Failure<Guid>($"Cannot create deposit in {request.Currency}");
+        
         using var transaction = await _unitOfWork.BeginTransactionAsync();
 
         try
@@ -210,7 +199,7 @@ public class AccountService
         }
         catch (Exception ex)
         {
-            return Result.Failure<Guid>($"Transaction failed: {ex.Message}");
+            return Result.Failure<Guid>($"{ex.Message}");
         }
     }
 }

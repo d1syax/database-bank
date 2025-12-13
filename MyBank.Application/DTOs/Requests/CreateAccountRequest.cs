@@ -9,6 +9,7 @@ public record CreateAccountRequest(
     
     [Required] 
     [StringLength(3, MinimumLength = 3)] 
+    [RegularExpression("^(UAH|USD|EUR)$", ErrorMessage = "Currency must be UAH, USD, or EUR")] 
     string Currency,
     
     [Required] 

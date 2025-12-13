@@ -1,5 +1,6 @@
 ﻿using CSharpFunctionalExtensions;
 using MyBank.Domain.Common;
+using MyBank.Domain.Constants;
 using MyBank.Domain.Enums; 
 
 namespace MyBank.Domain.Entities;
@@ -44,7 +45,12 @@ public class AccountEntity : SoftDeletableEntity
             
         if (string.IsNullOrWhiteSpace(currency) || currency.Length != 3) 
             return Result.Failure<AccountEntity>("Invalid currency code");
+        
+        currency = currency.ToUpper();
 
+        if (!CurrencyConstants.IsValid(currency))
+            return Result.Failure<AccountEntity>($"Unsupported currency");
+        
         var rnd = new Random();
         var accountNumber = $"UA{DateTime.UtcNow:yyMM}{Guid.NewGuid().ToString("N").Substring(0, 16)}";
 

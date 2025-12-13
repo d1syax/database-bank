@@ -55,32 +55,42 @@ public class LoanService
         
         if (account == null) 
             return Result.Failure<LoanResponse>("Account not found");
-        
-        if (account.UserId != user.Id)
-            return Result.Failure<LoanResponse>("The target account does not belong to the user");
 
         using var transaction = await _unitOfWork.BeginTransactionAsync();
         try
         {
+            if (account.UserId != user.Id)
+                return Result.Failure<LoanResponse>("Account does not belong to the user");
+        
+            if (!account.IsActive)
+                return Result.Failure<LoanResponse>("Account is not active");
+
+            var interestAmount = request.Amount * (request.InterestRate / 100m);
             var loanResult = LoanEntity.Create(user.Id, account.Id, request.Amount, request.InterestRate);
             if (loanResult.IsFailure) 
                 return Result.Failure<LoanResponse>(loanResult.Error);
-            
-            var newLoan = loanResult.Value;
-            
+
+            var loan = loanResult.Value;
+
+            var depositResult = account.Deposit(request.Amount);
+            if (depositResult.IsFailure)
+                return Result.Failure<LoanResponse>(depositResult.Error);
+
             var txResult = TransactionEntity.Create(
                 null, 
-                account.Id, 
+                account.Id,
                 request.Amount,
                 TransactionType.LoanDisbursement,
-                $"Rate: {request.InterestRate}%"
+                $"Loan disbursement, interest rate: {request.InterestRate}%"
             );
-            
-            if (txResult.IsFailure) return Result.Failure<LoanResponse>(txResult.Error);
+
+            if (txResult.IsFailure)
+                return Result.Failure<LoanResponse>(txResult.Error);
+
             var disbursementTx = txResult.Value;
             disbursementTx.Complete();
 
-            await _loanRepository.AddAsync(newLoan, ct);
+            await _loanRepository.AddAsync(loan, ct);
             await _transactionRepository.AddAsync(disbursementTx, ct);
             await _accountRepository.UpdateAsync(account, ct); 
         
@@ -88,8 +98,8 @@ public class LoanService
             await transaction.CommitAsync(ct);
 
             return Result.Success(new LoanResponse(
-                newLoan.Id, newLoan.PrincipalAmount, newLoan.InterestAmount, newLoan.PaidAmount,
-                newLoan.TotalAmountToRepay, newLoan.Status.ToString(), newLoan.IssuedAt
+                loan.Id, loan.PrincipalAmount, loan.InterestAmount, loan.PaidAmount,
+                loan.TotalAmountToRepay, loan.Status.ToString(), loan.IssuedAt
             ));
         }
         catch (Exception ex)

@@ -2,7 +2,7 @@
 
 public record CardResponse(
     Guid Id,
-    string MaskedCardNumber,
+    string CardNumber,
     string CardType,
     DateTime ExpirationDate,
     string Status,

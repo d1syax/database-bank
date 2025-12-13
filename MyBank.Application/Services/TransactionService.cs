@@ -24,62 +24,80 @@ public class TransactionService
     }
 
     public async Task<Result<TransactionResponse>> TransferAsync(CreateTransferRequest request, CancellationToken ct)
+{
+    var fromAccount = await _accountRepository.GetByIdAsync(request.FromAccountId, ct);
+    var toAccount = await _accountRepository.GetByIdAsync(request.ToAccountId, ct);
+
+    if (fromAccount == null || toAccount == null)
+        return Result.Failure<TransactionResponse>("One of the accounts was not found");
+
+    using var transaction = await _unitOfWork.BeginTransactionAsync();
+    try
     {
-        var fromAccount = await _accountRepository.GetByIdAsync(request.FromAccountId, ct);
-        var toAccount = await _accountRepository.GetByIdAsync(request.ToAccountId, ct);
+        if (fromAccount.Id == toAccount.Id)
+            return Result.Failure<TransactionResponse>("Cannot transfer to the same account");
 
-        if (fromAccount == null || toAccount == null)
-            return Result.Failure<TransactionResponse>("One of the accounts was not found");
+        if (fromAccount.Currency != toAccount.Currency)
+            return Result.Failure<TransactionResponse>("Currency mismatch");
 
-        using var transaction = await _unitOfWork.BeginTransactionAsync();
-        try
-        {
-            if (fromAccount.Id == toAccount.Id)
-                return Result.Failure<TransactionResponse>("Cannot transfer to the same account");
-
-            var withdrawResult = fromAccount.Withdraw(request.Amount);
-            if (withdrawResult.IsFailure) return Result.Failure<TransactionResponse>(withdrawResult.Error);
-
-            var depositResult = toAccount.Deposit(request.Amount);
-            if (depositResult.IsFailure) return Result.Failure<TransactionResponse>(depositResult.Error);
-
-            var txResult = TransactionEntity.Create(
-                fromAccount.Id, 
-                toAccount.Id, 
-                request.Amount, 
-                TransactionType.Transfer, 
-                request.Description
-            );
-            if (txResult.IsFailure) return Result.Failure<TransactionResponse>(txResult.Error);
+        var withdrawResult = fromAccount.Withdraw(request.Amount);
+        if (withdrawResult.IsFailure)
+            return Result.Failure<TransactionResponse>(withdrawResult.Error);
         
-            var transactionEntity = txResult.Value;
-            transactionEntity.Complete();
+        if (fromAccount.Currency != toAccount.Currency)
+            return Result.Failure<TransactionResponse>($"Cannot transfer between different currencies");
 
-            await _transactionRepository.AddAsync(transactionEntity, ct);
-            await _accountRepository.UpdateAsync(fromAccount, ct);
-            await _accountRepository.UpdateAsync(toAccount, ct);
+        var depositResult = toAccount.Deposit(request.Amount);
+        if (depositResult.IsFailure)
+        {
+            fromAccount.Deposit(request.Amount);
+            return Result.Failure<TransactionResponse>(depositResult.Error);
+        }
+
+        var txResult = TransactionEntity.Create(
+            fromAccount.Id, 
+            toAccount.Id, 
+            request.Amount, 
+            TransactionType.Transfer, 
+            request.Description
+        );
+
+        if (txResult.IsFailure)
+            return Result.Failure<TransactionResponse>(txResult.Error);
+
+        var tx = txResult.Value;
+        tx.Complete();
+
+        await _transactionRepository.AddAsync(tx, ct);
+        await _accountRepository.UpdateAsync(fromAccount, ct);
+        await _accountRepository.UpdateAsync(toAccount, ct);   
         
-            await _unitOfWork.SaveChangesAsync(ct);
-            await transaction.CommitAsync(ct);
+        await _unitOfWork.SaveChangesAsync(ct);
+        await transaction.CommitAsync(ct);
 
-            return Result.Success(new TransactionResponse(
-                transactionEntity.Id, transactionEntity.FromAccountId!.Value, transactionEntity.ToAccountId!.Value,
-                transactionEntity.Amount, transactionEntity.TransactionType.ToString(),
-                transactionEntity.Status.ToString(), transactionEntity.Description, transactionEntity.CreatedAt
-            ));
-        }
-        catch (DbUpdateConcurrencyException)
-        {
-            await transaction.RollbackAsync(ct);
-            return Result.Failure<TransactionResponse>(
-                "Transfer failed. Please try again");
-        }
-        catch (Exception ex)
-        {
-            return Result.Failure<TransactionResponse>($"{ex.Message}");
-        }
+        return Result.Success(new TransactionResponse(
+            tx.Id,
+            tx.FromAccountId!.Value,
+            tx.ToAccountId!.Value,
+            tx.Amount,
+            tx.TransactionType.ToString(),
+            tx.Status.ToString(),
+            tx.Description,
+            tx.CreatedAt
+        ));
     }
-
+    catch (DbUpdateConcurrencyException)
+    {
+        await transaction.RollbackAsync(ct);
+        return Result.Failure<TransactionResponse>(
+            "Transfer failed. Please try again");
+    }
+    catch (Exception ex)
+    {
+        await transaction.RollbackAsync(ct);
+        return Result.Failure<TransactionResponse>($"{ex.Message}");
+    }
+}
     public async Task<List<TransactionResponse>> GetAccountHistoryAsync(Guid accountId, CancellationToken ct)
     {
         var transactions = await _transactionRepository.GetByAccountIdAsync(accountId, ct);
