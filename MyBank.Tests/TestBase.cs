@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using MyBank.Infrastructure.Persistence;
 using MyBank.Infrastructure.Persistence.Repositories;
 using MyBank.Domain.Interfaces;
@@ -18,7 +19,7 @@ public class TestBase : IDisposable
     public TestBase()
     {
         var options = new DbContextOptionsBuilder<BankDbContext>()
-            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString()).ConfigureWarnings(x => x.Ignore(InMemoryEventId.TransactionIgnoredWarning))
             .Options;
 
         Context = new BankDbContext(options);
