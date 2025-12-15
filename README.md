@@ -14,13 +14,16 @@ Some description will be there soon...
 ## Tech stack 
 
 - **Backend:** C# 13 (.NET 9.0)
+- **Framework:** ASP.NET Core Web API
 - **Database:** PostgreSQL 14
 - **ORM:** Entity Framework Core 9.0 (EF Core)
+- **Testing:** xUnit, FluentAssertions, EF Core InMemory
 
 #### **Additional libraries:**
 
-- BCrypt.Net
-- CSharpFunctionalExtensions
+- **BCrypt.Net:** For secure password hashing
+- **CSharpFunctionalExtensions:** To handle Result patterns and avoid exceptions
+- **Swagger:** For API documentation and testing UI
 
 ---
 
