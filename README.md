@@ -29,14 +29,67 @@ Some description will be there soon...
 
 ## Configuration Guide
 
+### Prerequisites
 
+Make sure you have the following installed:
 
+- **Docker Desktop**
+- **.NET SDK** (recommended: .NET 9)
+- **Git**
 
+---
+
+## 📦 Project Setup
+
+### Step 1. Clone the Repository
+
+```bash
+git clone https://github.com/d1syax/database-bank.git
+cd database-bank
+```
+
+### Step 2. Configure Environment Settings
+
+### Step 3. Start Database Services
+
+```bash
+docker-compose up -d 
+```
+
+Afterwards on localhost:5050, you can use pgAdmin<br>
+**Authorization credentials:**
+
+**Login:** admin@admin.com<br>
+**Password:** root<br>
+
+Then register server with
+```
+Hostname/address: mybank_postgres
+Port: 5342
+Maintenance database: postgres
+Username: postgres
+Password: 123
+```
+
+### Step 4. Apply Database Migrations
+Run Entity Framework Core migrations to create database schema:
+```bash
+dotnet ef database update \
+  --project MyBank.Infrastructure \
+  --startup-project MyBank.Api
+```
+
+### Step 5. Run the Application
+```bash
+dotnet run --project MyBank.Api
+```
+The API will be available at: https:localhost:3000
 
 ### Tests:
 
 
 
 ## Example of API usage
+
 
 
