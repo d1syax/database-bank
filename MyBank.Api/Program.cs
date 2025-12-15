@@ -8,7 +8,6 @@ using MyBank.Infrastructure.Persistence.Repositories;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<BankDbContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
-
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
@@ -22,7 +21,6 @@ builder.Services.AddScoped<AccountService>();
 builder.Services.AddScoped<CardService>();
 builder.Services.AddScoped<LoanService>();
 builder.Services.AddScoped<TransactionService>();
-
 builder.Services.AddScoped<ReportService>();
 
 builder.Services.AddControllers();
@@ -30,16 +28,16 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
-
 var app = builder.Build();
 
+if (app.Environment.IsDevelopment())
+{
     app.UseSwagger();
     app.UseSwaggerUI();
+}
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.MapControllers();
 
 app.Run();
-
