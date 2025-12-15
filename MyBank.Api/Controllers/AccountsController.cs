@@ -56,4 +56,12 @@ public class AccountsController : ControllerBase
 
         return Ok("Account closed successfully");
     }
+    
+    [HttpPost("{id}/top-up")]
+    public async Task<IActionResult> TopUp(Guid id, [FromBody] decimal amount, CancellationToken ct)
+    {
+    var result = await _accountService.UpdateBalanceWithConcurrencyCheckAsync(id, amount, ct);
+    if (result.IsFailure) return BadRequest(result.Error);
+    return Ok(result.Value);
+    }
 }
