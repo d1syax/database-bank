@@ -403,3 +403,80 @@ INSERT INTO "Loans" (
     false,
     NULL
 );
+
+--- To fill Transactions
+
+INSERT INTO "Transactions" 
+(
+    "Id",
+    "FromAccountId",
+    "ToAccountId",
+    "Amount",
+    "TransactionType",
+    "Status",
+    "Description",
+    "CompletedAt",
+    "CreatedAt",
+    "UpdatedAt"
+) VALUES 
+(
+    '11111111-aaaa-1111-aaaa-111111111111',
+    '55555555-eeee-5555-eeee-555555555555',
+    '11111111-aaaa-1111-aaaa-111111111111',
+    1000.00,
+    'Transfer', 
+    'Completed', 
+    'Gift for birthday',
+    '2023-02-10 12:00:00',
+    '2023-02-10 12:00:00',
+    '2023-02-10 12:00:00'
+),
+(
+    '22222222-bbbb-2222-bbbb-222222222222',
+    NULL, 
+    '22222222-bbbb-2222-bbbb-222222222222',
+    25000.00,
+    'LoanDisbursement',
+    'Completed',
+    'Mortgage loan disbursement',
+    '2023-03-01 14:00:00',
+    '2023-03-01 14:00:00',
+    '2023-03-01 14:00:00'
+),
+(
+    '33333333-cccc-3333-cccc-333333333333',
+    '11111111-aaaa-1111-aaaa-111111111111',
+    NULL,
+    200.00,
+    'LoanPayment', 
+    'Completed', 
+    'Monthly loan payment',
+    '2023-03-01 09:00:00',
+    '2023-03-01 09:00:00',
+    '2023-03-01 09:00:00'
+),
+(
+    '44444444-dddd-4444-dddd-444444444444',
+    '66666666-ffff-6666-ffff-666666666666',
+    '33333333-cccc-3333-cccc-333333333333',
+    5000.00,
+    'Transfer',
+    'Failed',
+    'Insufficient funds',
+    NULL,
+    '2023-04-02 10:00:00',
+    '2023-04-02 10:05:00'
+),
+(
+    '55555555-eeee-5555-eeee-555555555555',
+    '33333333-cccc-3333-cccc-333333333333',
+    '77777777-0000-7777-0000-777777777777',
+    100.00,
+    'Transfer',
+    'Pending',
+    'Internal transfer',
+    NULL,
+    '2023-05-20 15:30:00',
+    '2023-05-20 15:30:00'
+);
+
