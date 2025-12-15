@@ -77,4 +77,47 @@ ORDER BY RemainingDebt DESC
 #### ORDER BY RemainingDebt DESC: Lists users with the highest debt first, immediately highlighting the highest financial risks.
 
 ## Example result
-
+```json
+[
+{
+"userId": "ee8af2c5-df8a-403c-b791-6a60c75b343e",
+"firstName": "danilo",
+"lastName": "boy",
+"fullName": "danilo boy",
+"email": "21312312@test.com",
+"totalLoans": 1,
+"remainingDebt": 65000,
+"riskCategory": "High Risk"
+},
+{
+"userId": "2894a9c7-132d-40ee-bb6e-10dcc9044727",
+"firstName": "Daniil",
+"lastName": "Boyko",
+"fullName": "Daniil Boyko",
+"email": "daniil.123@test.com",
+"totalLoans": 2,
+"remainingDebt": 11000,
+"riskCategory": "Medium Risk"
+},
+{
+"userId": "afe2bea6-b0bd-4098-b9cf-1668172247b7",
+"firstName": "321",
+"lastName": "321",
+"fullName": "321 321",
+"email": "321@gmail.com",
+"totalLoans": 2,
+"remainingDebt": 10000,
+"riskCategory": "Low Risk"
+},
+{
+"userId": "de1e23df-149a-4b4c-bb83-30ccacae1ea0",
+"firstName": "danila",
+"lastName": "boiko",
+"fullName": "danila boiko",
+"email": "bllzllz@gmail.com",
+"totalLoans": 1,
+"remainingDebt": 5000,
+"riskCategory": "Low Risk"
+}
+]
+```
