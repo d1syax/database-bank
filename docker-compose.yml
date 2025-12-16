@@ -6,7 +6,7 @@ services:
     container_name: mybank_postgres
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: YOUR_PASSWORD_HERE
+      POSTGRES_PASSWORD: 123
       POSTGRES_DB: coursework
     ports:
       - "5432:5432"
