@@ -135,7 +135,7 @@ MyBank/
 │   └── Interfaces/                   # Abstractions
 │
 ├── MyBank.Infrastructure/            # Infrastructure Layer
-│   ├── Migrations/                   # Файли міграцій EF Core (історія змін БД)
+│   ├── Migrations/                   # Migration files (history of migrations)
 │   └── Persistence/                  # Realization of access to DB
 │       ├── Configurations/           # Fluent API
 │       ├── Repositories/             # Repositories
@@ -149,7 +149,46 @@ MyBank/
 ```
 ## Example of API usage
 
+## Accounts
 
+#### GET /api/Accounts/user/{userId} - Get all accounts for a specific user
+#### POST /api/Accounts - Create a new account
+#### POST /api/Accounts/deposit - Deposit money into an account
+#### DELETE /api/Accounts/{id} - Delete an account
+#### POST /api/Accounts/{id}/top-up - Top up account balance
+
+## Cards
+
+#### GET /api/Cards/account/{accountId} - Get all cards linked to a specific account
+#### POST /api/Cards/issue - Issue a new card
+#### POST /api/Cards/{id}/block - Block a card
+#### PUT /api/Cards/{id}/limit - Update card spending limit
+#### GET /api/Cards/user/{userId} - Get all cards for a specific user
+
+## Loans
+
+#### GET /api/Loans/user/{userId} - Get all loans for a specific user
+#### POST /api/Loans/loan - Create a new loan
+#### POST /api/Loans/repay - Make a loan repayment
+#### DELETE /api/Loans/{id} - Delete a loan
+
+## Reports
+
+#### GET /api/Reports/report - Generate general financial report
+#### GET /api/Reports/monthly-transactions/{userId} - Get monthly transaction summary for a user
+
+## Transactions
+
+#### POST /api/Transactions/transfer - Transfer money between accounts
+#### GET /api/Transactions/account/{accountId} - Get transaction history for an account
+#### POST /api/Transactions/history/range - Get transactions within a date range
+
+## Users
+
+#### POST /api/Users/register - Register a new user
+#### GET /api/Users/{id} - Get user details by ID
+#### PUT /api/Users/{id} - Update user information
+#### DELETE /api/Users/{id} - Delete a user
 
 
 
