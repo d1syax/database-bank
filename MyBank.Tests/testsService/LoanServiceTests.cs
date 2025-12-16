@@ -1,6 +1,6 @@
 using FluentAssertions;
-using MyBank.Api.DTOs;
-using MyBank.Api.DTOs.Responses;
+using MyBank.Application.DTOs.Requests;
+using MyBank.Application.DTOs.Responses;
 using MyBank.Application.Services;
 using MyBank.Domain.Constants;
 using MyBank.Domain.Entities;

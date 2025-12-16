@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
-using MyBank.Api.DTOs;
 using MyBank.Application.DTOs;
+using MyBank.Application.DTOs.Requests;
 using MyBank.Application.Services;
 using MyBank.Domain.Constants;
 using Xunit;

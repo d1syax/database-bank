@@ -1,6 +1,6 @@
 using FluentAssertions;
-using MyBank.Api.DTOs;
-using MyBank.Api.DTOs.Responses;
+using MyBank.Application.DTOs.Requests;
+using MyBank.Application.DTOs.Responses;
 using MyBank.Application.Services;
 using MyBank.Domain.Constants;
 using MyBank.Domain.Entities;
@@ -23,6 +23,7 @@ public class TransactionServiceTests : TestBase
         
       _userService = new UserService(UserRepository, AccountRepository, CardRepository, UnitOfWork);
    }
+    [Fact]
     public async Task TransferAsync_WithValidData_ShouldTransferMoneyAndCreateRecord()
     {
         var senderUser = await CreateTestUserAsync("sender@example.com");
@@ -57,7 +58,7 @@ public class TransactionServiceTests : TestBase
         transaction.Should().NotBeNull();
         transaction!.TransactionType.Should().Be(TransactionType.Transfer);
     }
-
+    [Fact]
     public async Task TransferAsync_WithInvalidAccounts_ShouldFail()
     {
         var request = new CreateTransferRequest(
@@ -89,7 +90,7 @@ public class TransactionServiceTests : TestBase
         var result = await _transactionService.TransferAsync(request, CancellationToken.None);
 
         result.IsFailure.Should().BeTrue();
-        result.Error.Should().Contain("insufficient funds");
+        result.Error.Should().Contain("Insufficient funds");
 
         var updatedSender = await AccountRepository.GetByIdAsync(senderAccount.Id);
         updatedSender!.Balance.Should().Be(100m);
@@ -127,6 +128,6 @@ public class TransactionServiceTests : TestBase
         return account;
     }
 }
-}
+
 
   
