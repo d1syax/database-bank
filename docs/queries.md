@@ -58,6 +58,17 @@ WHERE NOT u.""IsDeleted"" AND NOT l.""IsDeleted""
 GROUP BY u.""Id"", u.""FirstName"", u.""LastName"", u.""Email""
 ORDER BY RemainingDebt DESC
 ```
+```json
+[
+  {
+    "currency": "UAH",
+    "month": "2025-12-01T00:00:00Z",
+    "transactionCount": 2,
+    "totalVolume": 1500,
+    "averageTransaction": 750
+  }
+]
+```
 
 ### Explanation of logic
 #### Inner Join: Connects the Users table with the Loans table.
