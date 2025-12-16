@@ -1,8 +1,9 @@
-﻿namespace MyBank.Application.Services;
+﻿using MyBank.Application.DTOs.Requests;
+
+namespace MyBank.Application.Services;
 
 using CSharpFunctionalExtensions;
-using MyBank.Api.DTOs;
-using MyBank.Api.DTOs.Responses;
+using MyBank.Application.DTOs.Responses;
 using MyBank.Domain.Entities;
 using MyBank.Domain.Interfaces;
 
@@ -68,5 +69,41 @@ public class CardService
         await _unitOfWork.SaveChangesAsync(ct);
 
         return Result.Success();
+    }
+    
+    public async Task<Result> UpdateCardLimitAsync(Guid cardId, decimal newLimit, CancellationToken ct)
+    {
+        var card = await _cardRepository.GetByIdAsync(cardId, ct);
+        if (card == null) 
+            return Result.Failure("Card not found");
+
+        var result = card.ChangeLimit(newLimit);
+        if (result.IsFailure) 
+            return result;
+
+        await _cardRepository.UpdateAsync(card, ct);
+        await _unitOfWork.SaveChangesAsync(ct);
+
+        return Result.Success();
+    }
+    
+    public async Task<List<UserCardsResponse>> GetUserCardsAsync(Guid userId, CancellationToken ct)
+    {
+        var cards = await _cardRepository.GetByUserIdAsync(userId, ct);
+    
+        var response = new List<UserCardsResponse>();
+        foreach (var card in cards)
+        {
+            response.Add(new UserCardsResponse(
+                card.Id,
+                card.MaskedCardNumber,
+                card.CardType.ToString(),
+                card.AccountEntity.AccountNumber,
+                card.AccountEntity.Balance,
+                card.Status.ToString(),
+                card.DailyLimit
+            ));
+        }
+        return response;
     }
 }

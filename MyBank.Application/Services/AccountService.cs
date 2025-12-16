@@ -1,7 +1,7 @@
 ﻿using CSharpFunctionalExtensions;
 using Microsoft.EntityFrameworkCore;
-using MyBank.Api.DTOs;
-using MyBank.Api.DTOs.Responses;
+using MyBank.Application.DTOs.Requests;
+using MyBank.Application.DTOs.Responses;
 using MyBank.Domain.Entities;
 using MyBank.Domain.Interfaces;
 using MyBank.Domain.Enums;
@@ -122,7 +122,6 @@ public class AccountService
         }
     }
     
-
     public async Task<Result<Guid>> OpenDepositAccountAsync(CreateDepositRequest request, CancellationToken ct)
     {
         if (request.Amount <= 0)

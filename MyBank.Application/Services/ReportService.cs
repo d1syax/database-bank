@@ -45,4 +45,37 @@ public class ReportService
                 $"{ex.Message}");
         }
     }
+    
+    public async Task<Result<List<MonthlyTransactionReportDto>>> GetMonthlyTransactionReportAsync(
+        Guid userId, 
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var sql = @"
+            SELECT 
+                a.""Currency"" as Currency,
+                DATE_TRUNC('month', t.""CreatedAt"") as Month,
+                COUNT(t.""Id"") as TransactionCount,
+                SUM(t.""Amount"") as TotalVolume,
+                AVG(t.""Amount"") as AverageTransaction
+            FROM ""Transactions"" t
+            JOIN ""Accounts"" a ON t.""FromAccountId"" = a.""Id""
+            WHERE t.""Status"" = 'Completed'
+            AND t.""TransactionType"" = 'Transfer'
+            AND a.""UserId"" = {0}
+            GROUP BY a.""Currency"", DATE_TRUNC('month', t.""CreatedAt"")
+            ORDER BY Month DESC";
+
+            var results = await _context.Database
+                .SqlQueryRaw<MonthlyTransactionReportDto>(sql, userId)
+                .ToListAsync(cancellationToken);
+
+            return Result.Success(results);
+        }
+        catch (Exception ex)
+        {
+            return Result.Failure<List<MonthlyTransactionReportDto>>($"{ex.Message}");
+        }
+    }
 }

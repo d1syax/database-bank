@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using MyBank.Api.DTOs;
+using MyBank.Application.DTOs.Requests;
 using MyBank.Application.Services;
 
 namespace MyBank.Api.Controllers;
@@ -44,4 +44,21 @@ public class CardsController : ControllerBase
         return Ok("Card blocked");
     }
     
+    [HttpPut("{id}/limit")]
+    public async Task<IActionResult> UpdateCardLimit(Guid id, UpdateCardLimitRequest request, CancellationToken ct)
+    {
+        var result = await _cardService.UpdateCardLimitAsync(id, request.NewDailyLimit, ct);
+    
+        if (result.IsFailure)
+            return BadRequest(result.Error);
+
+        return Ok("Card limit updated successfully");
+    }
+    
+    [HttpGet("user/{userId}")]
+    public async Task<IActionResult> GetUserCards(Guid userId, CancellationToken ct)
+    {
+        var cards = await _cardService.GetUserCardsAsync(userId, ct);
+        return Ok(cards);
+    }
 }

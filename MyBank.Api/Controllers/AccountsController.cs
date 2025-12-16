@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using MyBank.Api.DTOs;
+using MyBank.Application.DTOs.Requests;
 using MyBank.Application.Services;
 
 namespace MyBank.Api.Controllers;
@@ -55,5 +55,13 @@ public class AccountsController : ControllerBase
             return BadRequest(result.Error);
 
         return Ok("Account closed successfully");
+    }
+    
+    [HttpPost("{id}/top-up")]
+    public async Task<IActionResult> TopUp(Guid id, [FromBody] decimal amount, CancellationToken ct)
+    {
+    var result = await _accountService.UpdateBalanceWithConcurrencyCheckAsync(id, amount, ct);
+    if (result.IsFailure) return BadRequest(result.Error);
+    return Ok(result.Value);
     }
 }

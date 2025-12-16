@@ -52,4 +52,12 @@ public class CardRepository : ICardRepository
         _context.Cards.Update(card);
         return Task.CompletedTask;
     }
+    
+    public async Task<List<CardEntity>> GetByUserIdAsync(Guid userId, CancellationToken ct = default)
+    {
+        return await _context.Cards
+            .Include(c => c.AccountEntity)
+            .Where(c => c.AccountEntity.UserId == userId)
+            .ToListAsync(ct);
+    }
 }

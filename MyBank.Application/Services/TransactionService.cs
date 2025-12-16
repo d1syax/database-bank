@@ -1,7 +1,7 @@
 ﻿using CSharpFunctionalExtensions;
 using Microsoft.EntityFrameworkCore;
-using MyBank.Api.DTOs;
-using MyBank.Api.DTOs.Responses;
+using MyBank.Application.DTOs.Requests;
+using MyBank.Application.DTOs.Responses;
 using MyBank.Domain.Entities;
 using MyBank.Domain.Enums;
 using MyBank.Domain.Interfaces;
@@ -102,6 +102,32 @@ public class TransactionService
     {
         var transactions = await _transactionRepository.GetByAccountIdAsync(accountId, ct);
         
+        var response = new List<TransactionResponse>();
+        foreach (var t in transactions)
+        {
+            response.Add(new TransactionResponse(
+                t.Id,
+                t.FromAccountId ?? Guid.Empty,
+                t.ToAccountId ?? Guid.Empty,
+                t.Amount,
+                t.TransactionType.ToString(),
+                t.Status.ToString(),
+                t.Description,
+                t.CreatedAt
+            ));
+        }
+        return response;
+    }
+    
+    public async Task<List<TransactionResponse>> GetAccountHistoryByDateRangeAsync(
+        Guid accountId, 
+        DateTime startDate, 
+        DateTime endDate, 
+        CancellationToken ct)
+    {
+        var transactions = await _transactionRepository.GetByAccountIdAndDateRangeAsync(
+            accountId, startDate, endDate, ct);
+    
         var response = new List<TransactionResponse>();
         foreach (var t in transactions)
         {
