@@ -30,7 +30,7 @@ public class TransactionRepository : ITransactionRepository
         return await _context.Transactions
             .Include(x => x.FromAccount)
             .Include(x => x.ToAccount)
-            .Where(x => x.FromAccount.UserId == userId || x.ToAccount.UserId == userId)
+            .Where(x => x.FromAccount!.UserId == userId || x.ToAccount!.UserId == userId)
             .OrderByDescending(x => x.CreatedAt).ToListAsync(cancellationToken);
     }
 
@@ -49,5 +49,19 @@ public class TransactionRepository : ITransactionRepository
     {
         _context.Transactions.Update(transaction);
         return Task.CompletedTask;
+    }
+    
+    public async Task<List<TransactionEntity>> GetByAccountIdAndDateRangeAsync(
+        Guid accountId, 
+        DateTime startDate, 
+        DateTime endDate, 
+        CancellationToken ct = default)
+    {
+        return await _context.Transactions
+            .Where(x => (x.FromAccountId == accountId || x.ToAccountId == accountId) &&
+                        x.CreatedAt >= startDate && 
+                        x.CreatedAt <= endDate)
+            .OrderByDescending(x => x.CreatedAt)
+            .ToListAsync(ct);
     }
 }

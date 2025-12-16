@@ -1,7 +1,7 @@
 ﻿using CSharpFunctionalExtensions;
 using Microsoft.EntityFrameworkCore;
-using MyBank.Api.DTOs;
-using MyBank.Api.DTOs.Responses;
+using MyBank.Application.DTOs.Requests;
+using MyBank.Application.DTOs.Responses;
 using MyBank.Domain.Entities;
 using MyBank.Domain.Interfaces;
 using MyBank.Domain.Enums;
@@ -122,21 +122,6 @@ public class AccountService
         }
     }
     
-    public async Task<List<AccountResponse>> GetAccountsAboveBalanceAsync(Guid userId, decimal minBalance, CancellationToken cancellationToken = default)
-    {
-        var accounts = await _accountRepository.GetByUserIdAsync(userId, cancellationToken);
-    
-        var filtered = accounts
-            .Where(x => x.Balance >= minBalance && x.Status == Domain.Enums.AccountStatus.Active)
-            .OrderByDescending(x => x.Balance)
-            .Select(x => new AccountResponse(
-                x.Id, x.UserId, x.AccountNumber, x.Balance,
-                x.Currency, x.AccountType.ToString(), x.Status.ToString(), x.OpenedAt))
-            .ToList();
-
-        return filtered;
-    }
-
     public async Task<Result<Guid>> OpenDepositAccountAsync(CreateDepositRequest request, CancellationToken ct)
     {
         if (request.Amount <= 0)
@@ -154,7 +139,10 @@ public class AccountService
         {
             return Result.Failure<Guid>("Not enough money to open deposit");
         }
-
+        
+        if (fromAccount.Currency != request.Currency.ToUpper())
+            return Result.Failure<Guid>($"Cannot create deposit in {request.Currency}");
+        
         using var transaction = await _unitOfWork.BeginTransactionAsync();
 
         try
@@ -210,7 +198,7 @@ public class AccountService
         }
         catch (Exception ex)
         {
-            return Result.Failure<Guid>($"Transaction failed: {ex.Message}");
+            return Result.Failure<Guid>($"{ex.Message}");
         }
     }
 }

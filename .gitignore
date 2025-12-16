@@ -5,3 +5,5 @@ obj/
 **/obj/
 Debug/
 
+appsettings.Development.json
+

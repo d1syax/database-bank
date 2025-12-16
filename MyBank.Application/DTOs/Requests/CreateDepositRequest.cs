@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace MyBank.Api.DTOs;
+namespace MyBank.Application.DTOs.Requests;
 
 public record CreateDepositRequest(
     [Required]
@@ -11,5 +11,6 @@ public record CreateDepositRequest(
     [Range(0, 1000000)]
     decimal Amount,
     [Required]
+    [RegularExpression("^(UAH|USD|EUR)$", ErrorMessage = "Currency must be UAH, USD, or EUR")]
     string Currency
     );

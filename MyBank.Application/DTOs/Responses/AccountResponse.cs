@@ -1,4 +1,4 @@
-﻿namespace MyBank.Api.DTOs.Responses;
+﻿namespace MyBank.Application.DTOs.Responses;
 
 public record AccountResponse(
     Guid Id,

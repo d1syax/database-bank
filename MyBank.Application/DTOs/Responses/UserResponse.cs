@@ -1,4 +1,4 @@
-﻿namespace MyBank.Api.DTOs.Responses;
+﻿namespace MyBank.Application.DTOs.Responses;
 
 public record UserResponse(
     Guid Id,
@@ -6,5 +6,6 @@ public record UserResponse(
     string LastName,
     string Email,
     string Phone,
+    string DateOfBirth,
     DateTime CreatedAt
 );

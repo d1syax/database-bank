@@ -1,10 +1,11 @@
 ﻿
 using CSharpFunctionalExtensions;
-using MyBank.Api.DTOs;
-using MyBank.Api.DTOs.Responses;
+using MyBank.Application.DTOs;
+using MyBank.Application.DTOs.Requests;
+using MyBank.Application.DTOs.Responses;
 using MyBank.Domain.Entities;
+using MyBank.Domain.Enums;
 using MyBank.Domain.Interfaces;
-using MyBank.Domain.Services;
 
 namespace MyBank.Application.Services;
 
@@ -15,7 +16,6 @@ public class LoanService
     private readonly IUserRepository _userRepository;
     private readonly ITransactionRepository _transactionRepository;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly LoanDomainService _loanDomainService;
 
     public LoanService(ILoanRepository loanRepository, IAccountRepository accountRepository, IUserRepository userRepository, ITransactionRepository transactionRepository, IUnitOfWork unitOfWork)
     {
@@ -24,7 +24,6 @@ public class LoanService
         _userRepository = userRepository;
         _transactionRepository = transactionRepository;
         _unitOfWork = unitOfWork;
-        _loanDomainService = new LoanDomainService();
     }
     
     public async Task<List<LoanResponse>> GetUserLoansAsync(Guid userId, CancellationToken ct)
@@ -54,27 +53,54 @@ public class LoanService
 
         if (user == null) 
             return Result.Failure<LoanResponse>("User not found");
+        
         if (account == null) 
             return Result.Failure<LoanResponse>("Account not found");
 
         using var transaction = await _unitOfWork.BeginTransactionAsync();
         try
         {
-            var result = _loanDomainService.IssueLoan(user, account, request.Amount, request.InterestRate);
-            if (result.IsFailure) 
-                return Result.Failure<LoanResponse>(result.Error);
+            if (account.UserId != user.Id)
+                return Result.Failure<LoanResponse>("Account does not belong to the user");
+        
+            if (!account.IsActive)
+                return Result.Failure<LoanResponse>("Account is not active");
 
-            var (newLoan, disbursementTx) = result.Value;
+            var interestAmount = request.Amount * (request.InterestRate / 100m);
+            var loanResult = LoanEntity.Create(user.Id, account.Id, request.Amount, request.InterestRate);
+            if (loanResult.IsFailure) 
+                return Result.Failure<LoanResponse>(loanResult.Error);
 
-            await _loanRepository.AddAsync(newLoan, ct);
+            var loan = loanResult.Value;
+
+            var depositResult = account.Deposit(request.Amount);
+            if (depositResult.IsFailure)
+                return Result.Failure<LoanResponse>(depositResult.Error);
+
+            var txResult = TransactionEntity.Create(
+                null, 
+                account.Id,
+                request.Amount,
+                TransactionType.LoanDisbursement,
+                $"Loan disbursement, interest rate: {request.InterestRate}%"
+            );
+
+            if (txResult.IsFailure)
+                return Result.Failure<LoanResponse>(txResult.Error);
+
+            var disbursementTx = txResult.Value;
+            disbursementTx.Complete();
+
+            await _loanRepository.AddAsync(loan, ct);
             await _transactionRepository.AddAsync(disbursementTx, ct);
-            
+            await _accountRepository.UpdateAsync(account, ct); 
+        
             await _unitOfWork.SaveChangesAsync(ct);
             await transaction.CommitAsync(ct);
 
             return Result.Success(new LoanResponse(
-                newLoan.Id, newLoan.PrincipalAmount, newLoan.InterestAmount, newLoan.PaidAmount,
-                newLoan.TotalAmountToRepay, newLoan.Status.ToString(), newLoan.IssuedAt
+                loan.Id, loan.PrincipalAmount, loan.InterestAmount, loan.PaidAmount,
+                loan.TotalAmountToRepay, loan.Status.ToString(), loan.IssuedAt
             ));
         }
         catch (Exception ex)

@@ -5,7 +5,8 @@
         <TargetFramework>net9.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-    </PropertyGroup>
+      <UserSecretsId>e485a5b4-ea7e-4154-bfd3-981e8fee7e7b</UserSecretsId>
+  </PropertyGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\MyBank.Application\MyBank.Application.csproj" />
@@ -19,11 +20,15 @@
         <PrivateAssets>all</PrivateAssets>
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       </PackageReference>
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="9.0.8" />
       <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.8">
         <PrivateAssets>all</PrivateAssets>
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       </PackageReference>
       <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
+      <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="10.0.1" />
+      <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="10.0.1" />
+      <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="10.0.1" />
     </ItemGroup>
 
 </Project>

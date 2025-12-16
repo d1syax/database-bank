@@ -37,10 +37,12 @@ public class CardEntity : SoftDeletableEntity
         if (accountId == Guid.Empty)
             return Result.Failure<CardEntity>("AccountId is required");
         
-
-        var guidPortion = Guid.NewGuid().ToString("N")[..15];
+        var randomDigits = string.Concat(Enumerable.Range(0, 15).Select(_ => Random.Shared.Next(0, 10).ToString()));
+        
         var prefix = cardType == CardType.Credit ? "5" : "4";
-        var number = $"{prefix}{guidPortion}";
+        
+        var number = $"{prefix}{randomDigits}";
+        
         DateTime expiration = DateTime.UtcNow.AddYears(4);
 
         var card = new CardEntity(accountId, cardType, number, expiration);
