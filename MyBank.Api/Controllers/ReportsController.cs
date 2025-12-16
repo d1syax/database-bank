@@ -25,10 +25,10 @@ public class ReportsController : ControllerBase
         return Ok(result.Value);
     }
     
-    [HttpGet("monthly-transactions")]
-    public async Task<IActionResult> GetMonthlyTransactionReport(CancellationToken ct)
+    [HttpGet("monthly-transactions/{userId}")]
+    public async Task<IActionResult> GetMonthlyTransactionReport(Guid userId, CancellationToken cancellationToken)
     {
-        var result = await _reportService.GetMonthlyTransactionReportAsync(ct);
+        var result = await _reportService.GetMonthlyTransactionReportAsync(userId, cancellationToken);
     
         if (result.IsFailure)
             return BadRequest(result.Error);

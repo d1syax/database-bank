@@ -47,6 +47,7 @@ public class ReportService
     }
     
     public async Task<Result<List<MonthlyTransactionReportDto>>> GetMonthlyTransactionReportAsync(
+        Guid userId, 
         CancellationToken cancellationToken = default)
     {
         try
@@ -55,18 +56,19 @@ public class ReportService
             SELECT 
                 a.""Currency"" as Currency,
                 DATE_TRUNC('month', t.""CreatedAt"") as Month,
-                COUNT(DISTINCT t.""Id"") as TransactionCount,
+                COUNT(t.""Id"") as TransactionCount,
                 SUM(t.""Amount"") as TotalVolume,
                 AVG(t.""Amount"") as AverageTransaction
             FROM ""Transactions"" t
             JOIN ""Accounts"" a ON t.""FromAccountId"" = a.""Id""
             WHERE t.""Status"" = 'Completed'
             AND t.""TransactionType"" = 'Transfer'
+            AND a.""UserId"" = {0}
             GROUP BY a.""Currency"", DATE_TRUNC('month', t.""CreatedAt"")
-            ORDER BY Month DESC, TotalVolume DESC";
+            ORDER BY Month DESC";
 
             var results = await _context.Database
-                .SqlQueryRaw<MonthlyTransactionReportDto>(sql)
+                .SqlQueryRaw<MonthlyTransactionReportDto>(sql, userId)
                 .ToListAsync(cancellationToken);
 
             return Result.Success(results);
