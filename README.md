@@ -2,7 +2,7 @@
 
 ## Coursework for "Databases" course
 
-Some description will be there soon...
+A backend application for banking system automation designed with a multi-layered architecture (Clean Architecture) to ensure scalability and maintainability. The system manages accounts, card issuance, loan lifecycles, and secure transactions, while keeping strict separation between business logic and infrastructure.
 
 ## Worked on project:
 
@@ -33,9 +33,9 @@ Some description will be there soon...
 
 Make sure you have the following installed:
 
-- **Docker Desktop**
-- **.NET SDK** (recommended: .NET 9)
-- **Git**
+- [**Docker Desktop**](https://docs.docker.com/desktop/)
+- [**.NET SDK**](https://learn.microsoft.com/en-us/dotnet/core/install/)
+- [**Git**](https://git-scm.com/install/)
 
 ---
 
@@ -49,6 +49,16 @@ cd database-bank
 ```
 
 ### Step 2. Configure Environment Settings
+
+Change YOUR_PASSWORD_HERE for whatever you want in docker-compose.yml && /MyBank.Api/appsetings.json
+
+```yml
+POSTGRES_PASSWORD: YOUR_PASSWORD_HERE
+```
+
+```C#
+"DefaultConnection": "Host=localhost;Port=5432;Database=coursework;Username=postgres;Password=YOUR_PASSWORD_HERE"
+```
 
 ### Step 3. Start Database Services
 
@@ -65,10 +75,10 @@ Afterwards on localhost:5050, you can use pgAdmin<br>
 Then register server with
 ```
 Hostname/address: mybank_postgres
-Port: 5342
+Port: 5432
 Maintenance database: postgres
 Username: postgres
-Password: 123
+Password: YOUR_PASSWORD_HERE
 ```
 
 ### Step 4. Apply Database Migrations
@@ -83,13 +93,26 @@ dotnet ef database update \
 ```bash
 dotnet run --project MyBank.Api
 ```
-The API will be available at: https:localhost:3000
+The API will be available at: https:localhost:3000<br>
+To interactively explore and test the endpoints, navigate to: https://localhost:3000/swagger
 
-### Tests:
+## Tests:
+Firstly, navigate to the folder containing tests **/MyBank.Tests**<br>
 
+**Start all of the tests**
 
+```bash
+dotnet test
+```
+
+**Run a Specific Test Class**
+
+```bash
+dotnet test --filter <name> # For instance(AccountServiceTests)
+```
 
 ## Example of API usage
+
 
 
 
