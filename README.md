@@ -110,8 +110,45 @@ dotnet test
 ```bash
 dotnet test --filter <name> # For instance(AccountServiceTests)
 ```
-
+## Structure of Project
+```
+MyBank/
+├── MyBank.Api/                       # Presentation Layer (Enttry point)
+│   ├── Controllers/                  # API controllers
+│   ├── Middleware/                   # (Error catches, etc..)
+│   ├── appsettings.json              # Connection to DB
+│   └── Program.cs                    # Config, DI Container, start of pipeline 
+│
+├── MyBank.Application/               # Application Layer
+│   ├── DTOs/                         # Data Transfer Objects
+│   │   ├── Analytics/                # For analytical queries
+│   │   ├── Requests/                 # Requests from user
+│   │   └── Responses/                # Responses to user
+│   └── Services/                     # Logic of application
+│       └── ...                     
+│
+├── MyBank.Domain/                    # Domain Layer
+│   ├── Common/                       # General classes (BaseEntity, SoftDeletableEntity)
+│   ├── Constants/                    # Constants
+│   ├── Entities/                     # Entities for DB (User, Transaction)
+│   ├── Enums/                        # Enums (AccountType, Status)
+│   └── Interfaces/                   # Abstractions
+│
+├── MyBank.Infrastructure/            # Infrastructure Layer
+│   ├── Migrations/                   # Файли міграцій EF Core (історія змін БД)
+│   └── Persistence/                  # Realization of access to DB
+│       ├── Configurations/           # Fluent API
+│       ├── Repositories/             # Repositories
+│       ├── BankDbContext.cs          # Main context of Entity Framework
+│       └── UnitOfWork.cs             # Pattern for transactions
+│
+└── MyBank.Tests/                     # Testing
+    ├── testsDomain/                  # Unit-tests
+    ├── testsService/                 # Unit/Integration tests to check correctness of business logic
+    └── TestBase.cs                   # Base class with setup
+```
 ## Example of API usage
+
 
 
 
