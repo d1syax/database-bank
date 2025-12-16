@@ -102,4 +102,88 @@ public class LoanEntityTests
         result.Value.InterestAmount.Should().Be(0);
         result.Value.TotalAmountToRepay.Should().Be(amount);
     }
+    
+    
+    [Fact]
+    public void Repay_WithValidAmount_ShouldIncreasesPaidAmount()
+    {
+        var loan = LoanEntity.Create(
+            Guid.NewGuid(), 
+            Guid.NewGuid(), 
+            10000m,
+            10m 
+        ).Value;
+        
+        var result = loan.Repay(2000m);
+        
+        result.IsSuccess.Should().BeTrue();
+        loan.PaidAmount.Should().Be(2000m); 
+        loan.Status.Should().Be(LoanStatus.Active);
+        loan.IsFullyPaid.Should().BeFalse();
+    }
+    
+    [Fact]
+    public void Repay_WithNegativeAmount_ShouldFail()
+    {
+        var loan = LoanEntity.Create(Guid.NewGuid(), Guid.NewGuid(), 1000m, 10m).Value;
+        
+        var result = loan.Repay(-100m);
+
+        result.IsFailure.Should().BeTrue();
+        result.Error.Should().Contain("positive");
+        loan.PaidAmount.Should().Be(0);
+    }
+    
+    [Fact]
+    public void Repay_WithZeroAmount_ShouldFail()
+    {
+        var loan = LoanEntity.Create(Guid.NewGuid(), Guid.NewGuid(), 1000m, 10m).Value;
+        
+        var result = loan.Repay(0m);
+
+        result.IsFailure.Should().BeTrue();
+        result.Error.Should().Contain("positive");
+    }
+    
+    [Fact]
+    public void Repay_FullAmount_ShouldChangeStatusToPaid()
+    {
+        var loan = LoanEntity.Create(Guid.NewGuid(), Guid.NewGuid(), 10000m, 10m).Value;
+
+        var result = loan.Repay(11000m);
+
+        result.IsSuccess.Should().BeTrue();
+        loan.PaidAmount.Should().Be(11000m);
+        loan.Status.Should().Be(LoanStatus.Paid); 
+        loan.IsFullyPaid.Should().BeTrue();
+    }
+    
+    [Fact]
+    public void Repay_MultiplePayments_ShouldAccumulate()
+    {
+        var loan = LoanEntity.Create(Guid.NewGuid(), Guid.NewGuid(), 10000m, 10m).Value;
+
+        loan.Repay(3000m);
+        loan.Repay(4000m);
+        loan.Repay(4000m);
+        
+        loan.PaidAmount.Should().Be(11000m);
+        loan.Status.Should().Be(LoanStatus.Paid);
+        loan.IsFullyPaid.Should().BeTrue();
+    }
+    
+    [Fact]
+    public void Repay_AlreadyPaidLoan_ShouldFail()
+    {
+        var loan = LoanEntity.Create(Guid.NewGuid(), Guid.NewGuid(), 1000m, 10m).Value;
+        loan.Repay(1100m); 
+        
+        var paidAmountBefore = loan.PaidAmount;
+
+        var result = loan.Repay(100m);
+
+        result.IsFailure.Should().BeTrue();
+        result.Error.Should().Contain("not active");
+        loan.PaidAmount.Should().Be(paidAmountBefore);
+    }
 }
