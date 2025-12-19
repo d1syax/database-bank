@@ -1,7 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MyBank.Application.DTOs.Requests;
 using MyBank.Application.Services;
-
+using MyBank.Application.DTOs.Common;
+    
 namespace MyBank.Api.Controllers;
 
 [ApiController]
@@ -24,22 +25,35 @@ public class TransactionsController : ControllerBase
 
         return Ok(result.Value);
     }
-
+    
     [HttpGet("account/{accountId}")]
-    public async Task<IActionResult> GetHistory(Guid accountId, CancellationToken ct)
+    public async Task<IActionResult> GetHistory
+    (
+        Guid accountId, 
+        [FromQuery] PagedRequest pagination,
+        CancellationToken ct
+    )
     {
-        var history = await _transactionService.GetAccountHistoryAsync(accountId, ct);
+        var history = await _transactionService.GetAccountHistoryAsync(accountId, pagination, ct);
         return Ok(history);
     }
     
     [HttpPost("history/range")]
-    public async Task<IActionResult> GetHistoryByDateRange(TransactionHistoryRequest request, CancellationToken ct)
+    public async Task<IActionResult> GetHistoryByDateRange
+    (
+        [FromBody] TransactionHistoryRequest request,
+        [FromQuery] PagedRequest pagination,
+        CancellationToken ct
+    )
     {
-        var history = await _transactionService.GetAccountHistoryByDateRangeAsync(
+        var history = await _transactionService.GetAccountHistoryByDateRangeAsync
+        (
             request.AccountId, 
             request.StartDate, 
             request.EndDate, 
-            ct);
+            pagination,
+            ct
+        );
         return Ok(history);
     }
 }
