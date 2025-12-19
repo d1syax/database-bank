@@ -5,6 +5,8 @@ using MyBank.Application.DTOs.Responses;
 using MyBank.Domain.Entities;
 using MyBank.Domain.Enums;
 using MyBank.Domain.Interfaces;
+using MyBank.Application.DTOs.Common;
+    
 namespace MyBank.Application.Services;
 
 public class TransactionService
@@ -98,14 +100,28 @@ public class TransactionService
         return Result.Failure<TransactionResponse>($"{ex.Message}");
     }
 }
-    public async Task<List<TransactionResponse>> GetAccountHistoryAsync(Guid accountId, CancellationToken ct)
+    public async Task<List<TransactionResponse>> GetAccountHistoryAsync
+    (
+        Guid accountId, 
+        PagedRequest pagination,
+        CancellationToken ct
+    )
     {
-        var transactions = await _transactionRepository.GetByAccountIdAsync(accountId, ct);
+        var skip = (pagination.Page - 1) * pagination.PageSize;
+
+        var transactions = await _transactionRepository.GetByAccountIdAsync
+        (   accountId,
+            skip,
+            pagination.PageSize,
+            ct
+        );
         
         var response = new List<TransactionResponse>();
+        
         foreach (var t in transactions)
         {
-            response.Add(new TransactionResponse(
+            response.Add(new TransactionResponse
+            (
                 t.Id,
                 t.FromAccountId ?? Guid.Empty,
                 t.ToAccountId ?? Guid.Empty,
@@ -119,16 +135,29 @@ public class TransactionService
         return response;
     }
     
-    public async Task<List<TransactionResponse>> GetAccountHistoryByDateRangeAsync(
+    public async Task<List<TransactionResponse>> GetAccountHistoryByDateRangeAsync
+    (
         Guid accountId, 
         DateTime startDate, 
         DateTime endDate, 
-        CancellationToken ct)
+        PagedRequest pagination,
+        CancellationToken ct
+    )
     {
-        var transactions = await _transactionRepository.GetByAccountIdAndDateRangeAsync(
-            accountId, startDate, endDate, ct);
+        var skip = (pagination.Page - 1) * pagination.PageSize;
+    
+        var transactions = await _transactionRepository.GetByAccountIdAndDateRangeAsync
+        (
+            accountId, 
+            startDate, 
+            endDate, 
+            skip, 
+            pagination.PageSize, 
+            ct
+        );
     
         var response = new List<TransactionResponse>();
+        
         foreach (var t in transactions)
         {
             response.Add(new TransactionResponse(
