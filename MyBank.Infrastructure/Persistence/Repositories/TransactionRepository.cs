@@ -19,11 +19,21 @@ public class TransactionRepository : ITransactionRepository
         return await _context.Transactions.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
     }
 
-    public async Task<List<TransactionEntity>> GetByAccountIdAsync(Guid accountId, CancellationToken cancellationToken = default)
+    public async Task<List<TransactionEntity>> GetByAccountIdAsync
+    (
+        Guid accountId, 
+        int skip, 
+        int take, 
+        CancellationToken ct = default
+    )
     {
-        return await _context.Transactions.Where(x => x.FromAccountId == accountId || x.ToAccountId == accountId)
-            .OrderByDescending(x => x.CreatedAt).ToListAsync(cancellationToken);
-;   }
+        return await _context.Transactions
+            .Where(x => x.FromAccountId == accountId || x.ToAccountId == accountId)
+            .OrderByDescending(x => x.CreatedAt)
+            .Skip(skip)
+            .Take(take)
+            .ToListAsync(ct);
+    }
 
     public async Task<List<TransactionEntity>> GetByUserIdAsync(Guid userId, CancellationToken cancellationToken = default)
     {
@@ -51,17 +61,23 @@ public class TransactionRepository : ITransactionRepository
         return Task.CompletedTask;
     }
     
-    public async Task<List<TransactionEntity>> GetByAccountIdAndDateRangeAsync(
+    public async Task<List<TransactionEntity>> GetByAccountIdAndDateRangeAsync
+    (
         Guid accountId, 
         DateTime startDate, 
-        DateTime endDate, 
-        CancellationToken ct = default)
+        DateTime endDate,
+        int skip,
+        int take,
+        CancellationToken ct = default
+    )
     {
         return await _context.Transactions
             .Where(x => (x.FromAccountId == accountId || x.ToAccountId == accountId) &&
                         x.CreatedAt >= startDate && 
                         x.CreatedAt <= endDate)
             .OrderByDescending(x => x.CreatedAt)
+            .Skip(skip)
+            .Take(take)
             .ToListAsync(ct);
     }
 }
