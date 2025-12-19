@@ -30,30 +30,35 @@ public class LoanServiceTests : TestBase
     {
         var user = await CreateTestUserAsync();
         var account = await CreateTestAccountAsync(user.Id);
-        
+    
         var initialBalance = account.Balance;
-        
+    
         var request = new CreateLoanRequest(
             UserId: user.Id,
             AccountId: account.Id,
             Amount: 10000m, 
             InterestRate: 15m   
         );
-        
+    
         var result = await _loanService.IssueLoanAsync(request, CancellationToken.None);
-        
+    
         result.IsSuccess.Should().BeTrue();
-        
+    
         result.Value.PrincipalAmount.Should().Be(10000m);
         result.Value.InterestAmount.Should().Be(1500m);  
         result.Value.TotalAmountToRepay.Should().Be(11500m);
         result.Value.PaidAmount.Should().Be(0);
         result.Value.Status.Should().Be(LoanStatus.Active.ToString());
-        
+    
         var updatedAccount = await AccountRepository.GetByIdAsync(account.Id);
         updatedAccount!.Balance.Should().Be(initialBalance + 10000m); 
+    
+        var transactions = await TransactionRepository.GetByAccountIdAsync(
+            account.Id, 
+            skip: 0, 
+            take: 100, 
+            CancellationToken.None);
         
-        var transactions = await TransactionRepository.GetByAccountIdAsync(account.Id);
         transactions.Should().ContainSingle(t => 
             t.TransactionType == TransactionType.LoanDisbursement && 
             t.Amount == 10000m
