@@ -19,12 +19,9 @@ public class TransactionConfigurator : IEntityTypeConfiguration<TransactionEntit
         builder.Ignore(x => x.IsCompleted);
         builder.Ignore(x => x.IsInternal);
         
-        builder.HasIndex(x => x.CreatedAt);
-        
         builder.HasIndex(x => new { x.CreatedAt, x.TransactionType });
         builder.HasIndex(x => new { x.FromAccountId, x.Status });
         
-        builder.HasIndex(x => x.FromAccountId); 
         builder.HasIndex(x => x.ToAccountId);   
         
         builder.ToTable(t => t.HasCheckConstraint(

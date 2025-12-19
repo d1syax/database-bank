@@ -19,7 +19,6 @@ public class AccountConfigurator : IEntityTypeConfiguration<AccountEntity>
         builder.Property(x => x.AccountNumber).HasMaxLength(30).IsRequired();
 
         builder.HasIndex(x => x.AccountNumber).IsUnique();
-        builder.HasIndex(x => x.UserId);
         
         builder.HasIndex(x => new { x.UserId, x.AccountType, x.Status });
         builder.HasIndex(x => new { x.Currency, x.Balance });
